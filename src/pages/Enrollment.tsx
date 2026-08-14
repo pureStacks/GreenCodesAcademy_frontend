@@ -7,6 +7,8 @@ import { Input } from "@/src/components/ui/Input"
 import { Textarea } from "@/src/components/ui/Textarea"
 import { Select } from "@/src/components/ui/Select"
 import { Card } from "@/src/components/ui/Card"
+import { useAppStore } from "@/src/store"
+import toast from "react-hot-toast"
 
 type EnrollmentFormInputs = {
   fullName: string
@@ -19,13 +21,25 @@ type EnrollmentFormInputs = {
 
 export function Enrollment() {
   const [isSubmitted, setIsSubmitted] = React.useState(false)
-  const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<EnrollmentFormInputs>()
+  const { data } = useAppStore()
+  const { register, handleSubmit, formState: { errors, isSubmitting }, reset } = useForm<EnrollmentFormInputs>()
+  const programs = data?.programs?.filter((p: any) => p.published) || []
 
-  const onSubmit = async (data: EnrollmentFormInputs) => {
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1500))
-    console.log("Enrollment Data to be sent to greencodesacademy@gmail.com:", data)
-    setIsSubmitted(true)
+  const onSubmit = async (formData: EnrollmentFormInputs) => {
+    try {
+      const response = await fetch('/api/enrollments', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData)
+      });
+      
+      if (!response.ok) throw new Error('Failed to submit');
+      
+      setIsSubmitted(true);
+      toast.success('Enrollment submitted successfully!');
+    } catch (error) {
+      toast.error('Failed to submit enrollment. Please try again.');
+    }
   }
 
   const steps = [
@@ -97,7 +111,7 @@ export function Enrollment() {
                     <p className="text-lg text-gray-600 mb-8 max-w-lg mx-auto">
                       Thank you for applying to Green Codes Academy. We have received your details and will contact you via email/WhatsApp shortly with the next steps.
                     </p>
-                    <Button onClick={() => setIsSubmitted(false)}>Submit Another Application</Button>
+                    <Button onClick={() => { setIsSubmitted(false); reset(); }}>Submit Another Application</Button>
                   </motion.div>
                 ) : (
                   <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
@@ -154,12 +168,12 @@ export function Enrollment() {
                             defaultValue=""
                           >
                             <option value="" disabled>Select a program...</option>
-                            <option value="web-dev">Web Development</option>
-                            <option value="software-dev">Software Development</option>
-                            <option value="coding">Coding & Programming</option>
-                            <option value="ui-ux">UI/UX Design</option>
-                            <option value="digital-skills">Digital Skills</option>
-                            <option value="computer-fundamentals">Computer Fundamentals</option>
+                            {programs.map((p: any) => (
+                              <option key={p.id} value={p.name}>{p.name}</option>
+                            ))}
+                            {programs.length === 0 && (
+                              <option value="web-dev">Web Development</option>
+                            )}
                           </Select>
                           <ChevronRight className="absolute right-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400 rotate-90 pointer-events-none" />
                         </div>
@@ -203,7 +217,7 @@ export function Enrollment() {
                         {isSubmitting ? "PROCESSING..." : "ENROLL NOW"}
                       </Button>
                       <p className="text-center text-xs text-gray-500 mt-4">
-                        By submitting this form, you agree to our privacy policy and terms. Your information will be sent to greencodesacademy@gmail.com.
+                        By submitting this form, you agree to our privacy policy and terms. Your information will be sent securely to Green Codes Academy.
                       </p>
                     </div>
                   </form>

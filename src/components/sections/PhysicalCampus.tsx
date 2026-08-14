@@ -3,8 +3,12 @@ import { Link } from "react-router-dom"
 import { motion } from "motion/react"
 import { CheckCircle2 } from "lucide-react"
 import { Button } from "@/src/components/ui/Button"
+import { useAppStore } from "@/src/store"
 
 export function PhysicalCampus() {
+  const { data } = useAppStore();
+  const campusData = data?.campus || {};
+
   return (
     <section className="py-20 bg-green-950 text-white overflow-hidden relative">
       <div className="absolute top-0 left-0 w-full h-full opacity-10 pointer-events-none">
@@ -67,19 +71,19 @@ export function PhysicalCampus() {
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-4">
                 <img 
-                  src="https://i.ibb.co/gFvmkzHP/temp.jpg" 
+                  src={campusData?.image1 || "https://i.ibb.co/gFvmkzHP/temp.jpg"}
                   alt="Students coding together" 
                   className="rounded-3xl w-full h-48 object-cover shadow-lg border border-green-800"
                 />
                 <img 
-                  src="https://i.ibb.co/nNZ56Bvy/temp.jpg" 
+                  src={campusData?.image2 || "https://i.ibb.co/nNZ56Bvy/temp.jpg"}
                   alt="Student interaction" 
                   className="rounded-3xl w-full h-64 object-cover shadow-lg border border-green-800"
                 />
               </div>
               <div className="space-y-4 mt-8">
                 <img 
-                  src="https://i.ibb.co/nMcY3y7W/temp.jpg" 
+                  src={campusData?.image3 || "https://i.ibb.co/nMcY3y7W/temp.jpg"}
                   alt="Modern classroom" 
                   className="rounded-3xl w-full h-64 object-cover shadow-lg border border-green-800"
                 />

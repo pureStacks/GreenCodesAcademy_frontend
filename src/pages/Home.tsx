@@ -1,15 +1,32 @@
 import * as React from "react"
 import { Link } from "react-router-dom"
 import { motion } from "motion/react"
-import { Code, Monitor, Smartphone, Database, CheckCircle2, Star, Users, Briefcase, Award } from "lucide-react"
+import { Code, Monitor, Smartphone, Database, CheckCircle2, Star, Users, Briefcase, Award, Terminal, Laptop, Cpu } from "lucide-react"
 import { Hero } from "@/src/components/sections/Hero"
 import { Countdown } from "@/src/components/sections/Countdown"
 import { CTA } from "@/src/components/sections/CTA"
 import { PhysicalCampus } from "@/src/components/sections/PhysicalCampus"
 import { Card } from "@/src/components/ui/Card"
 import { Button } from "@/src/components/ui/Button"
+import { useAppStore } from "@/src/store"
 
 export function Home() {
+  const { data } = useAppStore();
+  const programs = data?.programs?.filter((p: any) => p.published).slice(0, 3) || [];
+  const testimonials = data?.testimonials?.filter((t: any) => t.published).slice(0, 3) || [];
+
+  const getIcon = (index: number) => {
+    const icons = [
+      <Monitor className="h-8 w-8 text-green-600" />,
+      <Code className="h-8 w-8 text-green-600" />,
+      <Smartphone className="h-8 w-8 text-green-600" />,
+      <Terminal className="h-8 w-8 text-green-600" />,
+      <Laptop className="h-8 w-8 text-green-600" />,
+      <Cpu className="h-8 w-8 text-green-600" />
+    ];
+    return icons[index % icons.length];
+  }
+
   return (
     <>
       <Hero />
@@ -26,25 +43,9 @@ export function Home() {
           </div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
-            {[
-              {
-                title: "Web Development",
-                icon: <Monitor className="h-8 w-8 text-green-600" />,
-                desc: "Learn how to create modern websites and web applications from scratch.",
-              },
-              {
-                title: "Software Development",
-                icon: <Code className="h-8 w-8 text-green-600" />,
-                desc: "Develop practical software development skills and understand software architecture.",
-              },
-              {
-                title: "UI/UX Design",
-                icon: <Smartphone className="h-8 w-8 text-green-600" />,
-                desc: "Learn how to design attractive and user-friendly digital products.",
-              }
-            ].map((program, index) => (
+            {programs.map((program: any, index: number) => (
               <motion.div
-                key={index}
+                key={program.id}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
@@ -52,10 +53,10 @@ export function Home() {
               >
                 <Card className="p-8 h-full flex flex-col hover:border-green-300 hover:shadow-lg transition-all group">
                   <div className="bg-green-50 w-16 h-16 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-green-100 transition-colors">
-                    {program.icon}
+                    {getIcon(index)}
                   </div>
-                  <h3 className="text-xl font-bold text-gray-900 mb-3">{program.title}</h3>
-                  <p className="text-gray-600 mb-8 flex-1">{program.desc}</p>
+                  <h3 className="text-xl font-bold text-gray-900 mb-3">{program.name}</h3>
+                  <p className="text-gray-600 mb-8 flex-1">{program.shortDescription}</p>
                   <Link to="/programs" className="text-green-700 font-semibold flex items-center hover:text-green-800">
                     Learn more <span className="ml-2 group-hover:translate-x-1 transition-transform">→</span>
                   </Link>
@@ -63,6 +64,10 @@ export function Home() {
               </motion.div>
             ))}
           </div>
+
+          {programs.length === 0 && (
+            <div className="text-center mb-12 text-gray-500">Check back soon for upcoming programs.</div>
+          )}
 
           <div className="text-center">
             <Link to="/programs" tabIndex={-1}>
@@ -159,25 +164,9 @@ export function Home() {
           </p>
 
           <div className="grid md:grid-cols-3 gap-8 mb-12">
-            {[
-              {
-                name: "Chukwudi N.",
-                course: "Web Development",
-                text: "I came in with almost no coding experience, and the practical approach made learning much easier. I can now build projects on my own."
-              },
-              {
-                name: "Sarah A.",
-                course: "UI/UX Design",
-                text: "Green Codes Academy gave me the confidence and practical skills I needed to start my technology journey."
-              },
-              {
-                name: "Tobi M.",
-                course: "Software Development",
-                text: "The instructors are patient, supportive, and focused on making sure students actually understand what they are learning."
-              }
-            ].map((testimonial, idx) => (
+            {testimonials.map((testimonial: any, idx: number) => (
               <motion.div
-                key={idx}
+                key={testimonial.id}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
@@ -185,7 +174,9 @@ export function Home() {
               >
                 <Card className="p-8 text-left h-full flex flex-col bg-gray-50 border-transparent">
                   <div className="flex text-yellow-400 mb-6">
-                    {[...Array(5)].map((_, i) => <Star key={i} className="h-5 w-5 fill-current" />)}
+                    {[...Array(5)].map((_, i) => (
+                      <Star key={i} className={`h-5 w-5 ${i < testimonial.rating ? 'fill-current' : 'text-gray-300'}`} />
+                    ))}
                   </div>
                   <p className="text-gray-700 italic mb-8 flex-1 leading-relaxed">"{testimonial.text}"</p>
                   <div className="flex items-center gap-4">
@@ -194,7 +185,7 @@ export function Home() {
                     </div>
                     <div>
                       <h4 className="font-bold text-gray-900">{testimonial.name}</h4>
-                      <p className="text-sm text-gray-500">{testimonial.course}</p>
+                      <p className="text-sm text-gray-500">{testimonial.program}</p>
                     </div>
                   </div>
                 </Card>
@@ -202,6 +193,10 @@ export function Home() {
             ))}
           </div>
           
+          {testimonials.length === 0 && (
+            <div className="text-center mb-12 text-gray-500">Check back soon for student stories.</div>
+          )}
+
           <Link to="/testimonials" tabIndex={-1}>
             <Button variant="outline" size="lg">READ MORE SUCCESS STORIES</Button>
           </Link>

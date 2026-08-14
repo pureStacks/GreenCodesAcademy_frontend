@@ -6,8 +6,19 @@ import { Input } from "@/src/components/ui/Input"
 import { Textarea } from "@/src/components/ui/Textarea"
 import { Accordion } from "@/src/components/ui/Accordion"
 import { Card } from "@/src/components/ui/Card"
+import { useAppStore } from "@/src/store"
 
 export function Contact() {
+  const { data } = useAppStore();
+  const siteData = data?.site || {};
+  const faqs = data?.faqs?.filter((f: any) => f.published) || [];
+
+  const phone = siteData.whatsapp || "+234 903 088 2127";
+  const email = siteData.email || "greencodesacademy@gmail.com";
+  const address = siteData.address || "123 Tech Avenue, Lagos, Nigeria.";
+
+  const cleanPhone = phone.replace(/\s/g, '');
+
   const [formState, setFormState] = React.useState({ status: "idle" })
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -19,49 +30,9 @@ export function Contact() {
   }
 
   const handleWhatsAppClick = () => {
-    const phoneNumber = "2349030882127"
     const message = encodeURIComponent("Hello Green Codes Academy, I would like to learn more about your programs and enrollment.")
-    window.open(`https://wa.me/${phoneNumber}?text=${message}`, "_blank")
+    window.open(`https://wa.me/${cleanPhone.replace('+', '')}?text=${message}`, "_blank")
   }
-
-  const faqs = [
-    {
-      question: "Who can enroll at Green Codes Academy?",
-      answer: "Anyone with an interest in technology can enroll! We have programs suitable for secondary school leavers, university students, working professionals looking to switch careers, and entrepreneurs."
-    },
-    {
-      question: "Do I need previous coding experience?",
-      answer: "Not at all. Our courses are designed to be beginner-friendly. We start from the fundamentals and gradually move to advanced concepts."
-    },
-    {
-      question: "What courses do you offer?",
-      answer: "We offer Web Development, Software Development, Coding & Programming, UI/UX Design, Digital Skills, and Computer Fundamentals."
-    },
-    {
-      question: "How long does each program take?",
-      answer: "Program durations vary from 8 weeks for basic courses to 24 weeks for comprehensive full-stack development tracks."
-    },
-    {
-      question: "Where is Green Codes Academy located?",
-      answer: "We are physically located at 123 Tech Avenue, Lagos, Nigeria. Our physical campus is equipped with modern learning facilities."
-    },
-    {
-      question: "Do students receive practical training?",
-      answer: "Yes, 100%. Our approach is highly practical. You will build real-world projects during your training to build your portfolio."
-    },
-    {
-      question: "How do I enroll?",
-      answer: "You can click the 'Enroll Now' button on our website, fill out the application form, and our admissions team will contact you with the next steps."
-    },
-    {
-      question: "What should I bring for training?",
-      answer: "We provide desktop computers in our physical labs, but we highly recommend bringing your own laptop so you can continue practicing at home."
-    },
-    {
-      question: "Can I contact Green Codes Academy through WhatsApp?",
-      answer: "Yes! You can reach us on WhatsApp at +234 903 088 2127 for quick inquiries about our programs and enrollment."
-    }
-  ]
 
   return (
     <>
@@ -101,7 +72,7 @@ export function Contact() {
                   </div>
                   <div>
                     <h4 className="font-bold text-gray-900 text-lg">School Address</h4>
-                    <p className="text-gray-600">123 Tech Avenue, Lagos, Nigeria.</p>
+                    <p className="text-gray-600">{address}</p>
                   </div>
                 </div>
                 
@@ -111,7 +82,7 @@ export function Contact() {
                   </div>
                   <div>
                     <h4 className="font-bold text-gray-900 text-lg">Phone & WhatsApp</h4>
-                    <a href="tel:+2349030882127" className="text-gray-600 hover:text-green-700 block">+234 903 088 2127</a>
+                    <a href={`tel:${cleanPhone}`} className="text-gray-600 hover:text-green-700 block">{phone}</a>
                   </div>
                 </div>
 
@@ -121,7 +92,7 @@ export function Contact() {
                   </div>
                   <div>
                     <h4 className="font-bold text-gray-900 text-lg">Email Address</h4>
-                    <a href="mailto:greencodesacademy@gmail.com" className="text-gray-600 hover:text-green-700 block">greencodesacademy@gmail.com</a>
+                    <a href={`mailto:${email}`} className="text-gray-600 hover:text-green-700 block">{email}</a>
                   </div>
                 </div>
 
@@ -207,7 +178,7 @@ export function Contact() {
                <div className="text-center p-6 bg-white/90 backdrop-blur rounded-2xl shadow-lg border border-gray-100 max-w-sm mx-auto z-10">
                   <MapPin className="h-10 w-10 text-green-600 mx-auto mb-3" />
                   <h3 className="font-bold text-gray-900 text-lg mb-2">Green Codes Academy Campus</h3>
-                  <p className="text-gray-600 text-sm">123 Tech Avenue, Lagos, Nigeria.</p>
+                  <p className="text-gray-600 text-sm">{address}</p>
                   <p className="text-xs text-gray-400 mt-4">(Interactive Map Placeholder)</p>
                </div>
                {/* Decorative background grid for the placeholder */}
@@ -221,7 +192,11 @@ export function Contact() {
               <h2 className="text-3xl font-bold text-gray-900 mb-4">Frequently Asked Questions</h2>
               <p className="text-gray-600">Find quick answers to common questions about our academy.</p>
             </div>
-            <Accordion items={faqs} />
+            {faqs.length > 0 ? (
+              <Accordion items={faqs} />
+            ) : (
+              <div className="text-center text-gray-500 py-8">No FAQs available at the moment.</div>
+            )}
           </div>
         </div>
       </section>

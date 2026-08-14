@@ -1,42 +1,27 @@
 import * as React from "react"
 import { motion } from "motion/react"
-import { CheckCircle2, Wrench, GraduationCap, Building2, TrendingUp, SmilePlus, Component } from "lucide-react"
+import { CheckCircle2, Wrench, GraduationCap, Building2, TrendingUp, SmilePlus, Component, MonitorPlay, Users, Award } from "lucide-react"
 import { Card } from "@/src/components/ui/Card"
 import { CTA } from "@/src/components/sections/CTA"
+import { useAppStore } from "@/src/store"
+
+// Map of potential icons, falling back to CheckCircle2
+const iconMap: Record<string, React.ReactNode> = {
+  Wrench: <Wrench className="h-8 w-8 text-green-600" />,
+  GraduationCap: <GraduationCap className="h-8 w-8 text-green-600" />,
+  Building2: <Building2 className="h-8 w-8 text-green-600" />,
+  TrendingUp: <TrendingUp className="h-8 w-8 text-green-600" />,
+  SmilePlus: <SmilePlus className="h-8 w-8 text-green-600" />,
+  Component: <Component className="h-8 w-8 text-green-600" />,
+  MonitorPlay: <MonitorPlay className="h-8 w-8 text-green-600" />,
+  Users: <Users className="h-8 w-8 text-green-600" />,
+  Award: <Award className="h-8 w-8 text-green-600" />,
+  CheckCircle2: <CheckCircle2 className="h-8 w-8 text-green-600" />
+};
 
 export function WhyChooseUs() {
-  const reasons = [
-    {
-      title: "Practical Training",
-      icon: <Wrench className="h-8 w-8 text-green-600" />,
-      desc: "Students learn by doing and building real projects. We emphasize hands-on experience over theoretical lectures."
-    },
-    {
-      title: "Experienced Instructors",
-      icon: <GraduationCap className="h-8 w-8 text-green-600" />,
-      desc: "Students receive guidance from knowledgeable instructors who work in the tech industry and understand current trends."
-    },
-    {
-      title: "Modern Learning Environment",
-      icon: <Building2 className="h-8 w-8 text-green-600" />,
-      desc: "We provide a comfortable physical environment equipped with modern computers and reliable internet for effective learning."
-    },
-    {
-      title: "Career-Focused Skills",
-      icon: <TrendingUp className="h-8 w-8 text-green-600" />,
-      desc: "We teach practical skills that can directly support employment, freelancing, entrepreneurship, and further education."
-    },
-    {
-      title: "Beginner Friendly",
-      icon: <SmilePlus className="h-8 w-8 text-green-600" />,
-      desc: "Students can start without any previous coding experience. Our curriculum is designed to take you from zero to proficient."
-    },
-    {
-      title: "Project-Based Learning",
-      icon: <Component className="h-8 w-8 text-green-600" />,
-      desc: "Students gain experience by creating practical projects they can show to future employers or clients."
-    }
-  ]
+  const { data } = useAppStore();
+  const reasons = data?.whyChooseUs || [];
 
   return (
     <>
@@ -60,9 +45,9 @@ export function WhyChooseUs() {
       <section className="py-20 bg-gray-50">
         <div className="container mx-auto px-4 md:px-6 max-w-7xl">
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {reasons.map((reason, index) => (
+            {reasons.map((reason: any, index: number) => (
               <motion.div
-                key={index}
+                key={reason.id}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
@@ -70,14 +55,19 @@ export function WhyChooseUs() {
               >
                 <Card className="p-8 h-full flex flex-col hover:border-green-300 hover:shadow-lg transition-all group">
                   <div className="bg-green-50 w-16 h-16 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-green-100 transition-colors">
-                    {reason.icon}
+                    {iconMap[reason.icon] || iconMap.CheckCircle2}
                   </div>
                   <h3 className="text-xl font-bold text-gray-900 mb-3">{reason.title}</h3>
-                  <p className="text-gray-600 leading-relaxed">{reason.desc}</p>
+                  <p className="text-gray-600 leading-relaxed">{reason.description}</p>
                 </Card>
               </motion.div>
             ))}
           </div>
+          {reasons.length === 0 && (
+            <div className="text-center py-20 text-gray-500">
+              More information coming soon!
+            </div>
+          )}
         </div>
       </section>
 

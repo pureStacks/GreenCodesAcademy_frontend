@@ -1,6 +1,6 @@
 import * as React from "react"
 import { Link, useLocation } from "react-router-dom"
-import { Menu, X, Code2 } from "lucide-react"
+import { Menu, X, Code2, Lock } from "lucide-react"
 import { Button } from "@/src/components/ui/Button"
 import { cn } from "@/src/lib/utils"
 
@@ -66,6 +66,10 @@ export function Header() {
           </nav>
 
           <div className="flex items-center gap-3">
+            <Link to="/admin/login" className="text-gray-400 hover:text-gray-600 transition-colors" title="Admin Login">
+              <Lock className="h-4 w-4" />
+            </Link>
+            
             <Link to="/enrollment" tabIndex={-1}>
               <Button size="sm" className="hidden md:inline-flex px-6">
                 ENROLL NOW

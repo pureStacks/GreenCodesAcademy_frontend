@@ -3,40 +3,11 @@ import { motion } from "motion/react"
 import { Star } from "lucide-react"
 import { Card } from "@/src/components/ui/Card"
 import { CTA } from "@/src/components/sections/CTA"
+import { useAppStore } from "@/src/store"
 
 export function Testimonials() {
-  const testimonials = [
-    {
-      name: "Chukwudi N.",
-      course: "Web Development",
-      text: "I came in with almost no coding experience, and the practical approach made learning much easier. I can now build projects on my own. The instructors were always available to help when I got stuck."
-    },
-    {
-      name: "Sarah A.",
-      course: "UI/UX Design",
-      text: "Green Codes Academy gave me the confidence and practical skills I needed to start my technology journey. The curriculum is up-to-date with what employers are actually looking for."
-    },
-    {
-      name: "Tobi M.",
-      course: "Software Development",
-      text: "The instructors are patient, supportive, and focused on making sure students actually understand what they are learning. It's not just about passing exams, it's about building real skills."
-    },
-    {
-      name: "Fatima B.",
-      course: "Digital Skills",
-      text: "The physical learning environment makes a huge difference. Being able to interact with classmates and instructors face-to-face kept me motivated throughout the program."
-    },
-    {
-      name: "Emmanuel K.",
-      course: "Coding & Programming",
-      text: "I tried learning online but kept giving up. Green Codes Academy provided the structure and mentorship I needed. The project-based approach is exactly what I was looking for."
-    },
-    {
-      name: "Grace O.",
-      course: "Web Development",
-      text: "Best investment I've made in my career. Within months of completing my training, I was able to secure an internship thanks to the portfolio of projects I built during the course."
-    }
-  ]
+  const { data } = useAppStore();
+  const testimonials = data?.testimonials?.filter((t: any) => t.published) || [];
 
   return (
     <>
@@ -60,9 +31,9 @@ export function Testimonials() {
       <section className="py-20 bg-gray-50">
         <div className="container mx-auto px-4 md:px-6 max-w-7xl">
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
-            {testimonials.map((testimonial, idx) => (
+            {testimonials.map((testimonial: any, idx: number) => (
               <motion.div
-                key={idx}
+                key={testimonial.id}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
@@ -70,7 +41,9 @@ export function Testimonials() {
               >
                 <Card className="p-8 text-left h-full flex flex-col bg-white hover:shadow-lg transition-shadow">
                   <div className="flex text-yellow-400 mb-6">
-                    {[...Array(5)].map((_, i) => <Star key={i} className="h-5 w-5 fill-current" />)}
+                    {[...Array(5)].map((_, i) => (
+                      <Star key={i} className={`h-5 w-5 ${i < testimonial.rating ? 'fill-current' : 'text-gray-200'}`} />
+                    ))}
                   </div>
                   <p className="text-gray-700 italic mb-8 flex-1 leading-relaxed">"{testimonial.text}"</p>
                   <div className="flex items-center gap-4 border-t border-gray-100 pt-6 mt-auto">
@@ -79,7 +52,7 @@ export function Testimonials() {
                     </div>
                     <div>
                       <h4 className="font-bold text-gray-900">{testimonial.name}</h4>
-                      <p className="text-sm text-gray-500">{testimonial.course}</p>
+                      <p className="text-sm text-gray-500">{testimonial.program}</p>
                     </div>
                   </div>
                 </Card>
@@ -87,7 +60,13 @@ export function Testimonials() {
             ))}
           </div>
 
-          <div className="text-center">
+          {testimonials.length === 0 && (
+            <div className="text-center py-10 text-gray-500 text-xl font-medium">
+              Check back soon for new student success stories!
+            </div>
+          )}
+
+          <div className="text-center mt-12">
             <h3 className="text-2xl font-bold text-gray-900 mb-2">YOUR SUCCESS STORY COULD BE NEXT.</h3>
           </div>
         </div>

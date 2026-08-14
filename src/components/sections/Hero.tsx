@@ -2,8 +2,22 @@ import { Link } from "react-router-dom"
 import { ArrowRight, CheckCircle2 } from "lucide-react"
 import { Button } from "@/src/components/ui/Button"
 import { motion } from "motion/react"
+import { useAppStore } from "@/src/store"
 
 export function Hero() {
+  const { data } = useAppStore();
+  const homeData = data?.home || {};
+
+  const heading = homeData.heroHeading || "BUILD THE SKILLS OF TOMORROW, TODAY.";
+  const subheading = homeData.heroSubheading || "Empowering students with practical technology, coding, and digital skills for a smarter future. Join the premier physical tech academy in Nigeria.";
+  const ctaText = homeData.heroCtaText || "ENROLL NOW";
+  const image = homeData.heroImage || "https://i.ibb.co/B2jpgXwv/test.jpg";
+
+  // Split heading to colorize the last word if possible
+  const headingWords = heading.split(' ');
+  const lastWord = headingWords.pop();
+  const firstPart = headingWords.join(' ');
+
   return (
     <section className="relative bg-white pt-12 pb-20 lg:pt-24 lg:pb-32 overflow-hidden">
       {/* Background decoration */}
@@ -26,17 +40,17 @@ export function Hero() {
             </div>
             
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-gray-900 leading-[1.1] mb-6 tracking-tight">
-              BUILD THE SKILLS OF <span className="text-transparent bg-clip-text bg-gradient-to-r from-green-600 to-green-800">TOMORROW</span>, TODAY.
+              {firstPart} <span className="text-transparent bg-clip-text bg-gradient-to-r from-green-600 to-green-800">{lastWord}</span>
             </h1>
             
             <p className="text-lg md:text-xl text-gray-600 mb-8 leading-relaxed max-w-xl">
-              Empowering students with practical technology, coding, and digital skills for a smarter future. Join the premier physical tech academy in Nigeria.
+              {subheading}
             </p>
             
             <div className="flex flex-col sm:flex-row gap-4 mb-10">
               <Link to="/enrollment" tabIndex={-1}>
                 <Button size="lg" className="w-full sm:w-auto px-8 shadow-lg shadow-green-700/20 text-base">
-                  ENROLL NOW
+                  {ctaText}
                 </Button>
               </Link>
               <Link to="/programs" tabIndex={-1}>
@@ -78,7 +92,7 @@ export function Hero() {
                  </div>
               </div>
               <img 
-                src="https://i.ibb.co/B2jpgXwv/test.jpg" 
+                src={image} 
                 alt="Students collaborating and coding in a modern classroom" 
                 className="absolute inset-0 w-full h-full object-cover"
                 loading="lazy"

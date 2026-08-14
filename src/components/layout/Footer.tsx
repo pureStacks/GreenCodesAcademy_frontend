@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom"
 import { Code2, Facebook, Twitter, Instagram, Linkedin, Mail, Phone, MapPin } from "lucide-react"
+import { useAppStore } from "@/src/store"
 
 const navItems = [
   { name: "Home", path: "/" },
@@ -12,6 +13,16 @@ const navItems = [
 ]
 
 export function Footer() {
+  const { data } = useAppStore();
+  const siteData = data?.site || {};
+
+  const siteName = siteData.name || "Green Codes Academy";
+  const footerDesc = siteData.footerDescription || "Empowering the next generation with practical technology and digital skills.";
+  const phone = siteData.whatsapp || "+234 903 088 2127";
+  const email = siteData.email || "greencodesacademy@gmail.com";
+  const address = siteData.address || "123 Tech Avenue, Lagos, Nigeria.";
+  const copyright = siteData.copyright || "© 2026 Green Code Academy. All Rights Reserved.";
+
   return (
     <footer className="bg-gray-950 text-gray-300 pt-16 pb-8">
       <div className="container mx-auto px-4 md:px-6 max-w-7xl">
@@ -22,10 +33,10 @@ export function Footer() {
               <div className="bg-green-600 text-white p-1.5 rounded-lg">
                 <Code2 className="h-6 w-6" />
               </div>
-              <span className="font-bold text-xl tracking-tight">Green Codes Academy</span>
+              <span className="font-bold text-xl tracking-tight">{siteName}</span>
             </div>
             <p className="text-gray-400 leading-relaxed max-w-xs">
-              Empowering the next generation with practical technology and digital skills.
+              {footerDesc}
             </p>
             <div className="flex items-center gap-4">
               <a href="#" className="text-gray-400 hover:text-white transition-colors" aria-label="Facebook">
@@ -68,8 +79,8 @@ export function Footer() {
                 <Phone className="h-5 w-5 text-green-500 shrink-0" />
                 <div>
                   <span className="block text-sm text-gray-500 mb-1">WhatsApp & Call</span>
-                  <a href="tel:+2349030882127" className="hover:text-white transition-colors block">
-                    +234 903 088 2127
+                  <a href={`tel:${phone.replace(/\s/g, '')}`} className="hover:text-white transition-colors block">
+                    {phone}
                   </a>
                 </div>
               </li>
@@ -77,8 +88,8 @@ export function Footer() {
                 <Mail className="h-5 w-5 text-green-500 shrink-0" />
                 <div>
                   <span className="block text-sm text-gray-500 mb-1">Email</span>
-                  <a href="mailto:greencodesacademy@gmail.com" className="hover:text-white transition-colors block break-all">
-                    greencodesacademy@gmail.com
+                  <a href={`mailto:${email}`} className="hover:text-white transition-colors block break-all">
+                    {email}
                   </a>
                 </div>
               </li>
@@ -86,7 +97,7 @@ export function Footer() {
                 <MapPin className="h-5 w-5 text-green-500 shrink-0" />
                 <div>
                   <span className="block text-sm text-gray-500 mb-1">Location</span>
-                  <span className="block">123 Tech Avenue, Lagos, Nigeria.</span>
+                  <span className="block">{address}</span>
                 </div>
               </li>
             </ul>
@@ -117,7 +128,7 @@ export function Footer() {
 
         <div className="border-t border-gray-800 pt-8 mt-8 flex flex-col md:flex-row items-center justify-between gap-4">
           <p className="text-gray-500 text-sm">
-            © 2026 Green Code Academy. All Rights Reserved.
+            {copyright}
           </p>
           <div className="flex items-center gap-4 text-sm text-gray-500">
             <Link to="#" className="hover:text-white transition-colors">Privacy Policy</Link>

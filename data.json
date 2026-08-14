@@ -1,0 +1,75 @@
+{
+  "site": {
+    "name": "Green Codes Academy",
+    "whatsapp": "+2349030882127",
+    "email": "greencodesacademy@gmail.com",
+    "address": "123 Tech Avenue, Lagos, Nigeria.",
+    "footerDescription": "Empowering the next generation of tech leaders.",
+    "copyright": "© 2026 Green Code Academy. All Rights Reserved."
+  },
+  "home": {
+    "heroHeading": "BUILD THE SKILLS OF TOMORROW, TODAY.",
+    "heroSubheading": "Empowering students, professionals, and entrepreneurs with practical technology and coding skills.",
+    "heroCtaText": "ENROLL NOW",
+    "heroImage": "https://i.ibb.co/B2jpgXwv/test.jpg"
+  },
+  "programs": [
+    {
+      "id": "web-dev",
+      "name": "Web Development",
+      "shortDescription": "Master HTML, CSS, JavaScript, and React to build responsive, modern websites.",
+      "duration": "12 Weeks",
+      "level": "Beginner to Intermediate",
+      "published": true
+    },
+    {
+      "id": "software-dev",
+      "name": "Software Development",
+      "shortDescription": "Learn full-stack development, algorithms, and software engineering principles.",
+      "duration": "24 Weeks",
+      "level": "Intermediate to Advanced",
+      "published": true
+    }
+  ],
+  "whyChooseUs": [
+    {
+      "id": "1",
+      "title": "Practical Training",
+      "description": "100% hands-on learning with real-world projects.",
+      "icon": "MonitorPlay"
+    },
+    {
+      "id": "2",
+      "title": "Experienced Instructors",
+      "description": "Learn from industry professionals with years of experience.",
+      "icon": "Users"
+    }
+  ],
+  "testimonials": [
+    {
+      "id": "1",
+      "name": "David O.",
+      "program": "Web Development",
+      "text": "The instructors at Green Codes Academy are fantastic. The practical approach helped me land my first tech job.",
+      "rating": 5,
+      "published": true
+    }
+  ],
+  "faqs": [
+    {
+      "id": "1",
+      "question": "Who can enroll at Green Codes Academy?",
+      "answer": "Anyone with an interest in technology can enroll! We have programs suitable for secondary school leavers, university students, and professionals.",
+      "published": true
+    }
+  ],
+  "enrollments": [],
+  "about": {
+    "image": "https://i.ibb.co/dsJrwsPC/temp.jpg"
+  },
+  "campus": {
+    "image1": "https://i.ibb.co/gFvmkzHP/temp.jpg",
+    "image2": "https://i.ibb.co/nNZ56Bvy/temp.jpg",
+    "image3": "https://i.ibb.co/nMcY3y7W/temp.jpg"
+  }
+}

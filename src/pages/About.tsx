@@ -4,8 +4,12 @@ import { motion } from "motion/react"
 import { CheckCircle2, Target, BookOpen, Users2 } from "lucide-react"
 import { Button } from "@/src/components/ui/Button"
 import { CTA } from "@/src/components/sections/CTA"
+import { useAppStore } from "@/src/store"
 
 export function About() {
+  const { data } = useAppStore();
+  const aboutData = data?.about || {};
+
   return (
     <>
       <section className="bg-green-950 text-white py-20 lg:py-32">
@@ -81,7 +85,7 @@ export function About() {
                   </div>
                 </div>
                 <img 
-                  src="https://i.ibb.co/dsJrwsPC/temp.jpg" 
+                  src={aboutData?.image || "https://i.ibb.co/dsJrwsPC/temp.jpg"}
                   alt="Students and instructor in a modern coding bootcamp" 
                   className="w-full h-full object-cover"
                 />
