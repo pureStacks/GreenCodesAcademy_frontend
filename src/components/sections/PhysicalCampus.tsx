@@ -67,19 +67,19 @@ export function PhysicalCampus() {
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-4">
                 <img 
-                  src="https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" 
+                  src="https://i.ibb.co/gFvmkzHP/temp.jpg" 
                   alt="Students coding together" 
                   className="rounded-3xl w-full h-48 object-cover shadow-lg border border-green-800"
                 />
                 <img 
-                  src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" 
+                  src="https://i.ibb.co/nNZ56Bvy/temp.jpg" 
                   alt="Student interaction" 
                   className="rounded-3xl w-full h-64 object-cover shadow-lg border border-green-800"
                 />
               </div>
               <div className="space-y-4 mt-8">
                 <img 
-                  src="https://images.unsplash.com/photo-1531482615713-2afd69097998?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" 
+                  src="https://i.ibb.co/nMcY3y7W/temp.jpg" 
                   alt="Modern classroom" 
                   className="rounded-3xl w-full h-64 object-cover shadow-lg border border-green-800"
                 />

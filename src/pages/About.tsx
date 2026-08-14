@@ -81,7 +81,7 @@ export function About() {
                   </div>
                 </div>
                 <img 
-                  src="https://images.unsplash.com/photo-1531482615713-2afd69097998?ixlib=rb-4.0.3&auto=format&fit=crop&w=1400&q=80" 
+                  src="https://i.ibb.co/dsJrwsPC/temp.jpg" 
                   alt="Students and instructor in a modern coding bootcamp" 
                   className="w-full h-full object-cover"
                 />

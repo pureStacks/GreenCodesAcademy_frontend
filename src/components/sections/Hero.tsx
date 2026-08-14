@@ -78,7 +78,7 @@ export function Hero() {
                  </div>
               </div>
               <img 
-                src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?ixlib=rb-4.0.3&auto=format&fit=crop&w=1400&q=80" 
+                src="https://i.ibb.co/B2jpgXwv/test.jpg" 
                 alt="Students collaborating and coding in a modern classroom" 
                 className="absolute inset-0 w-full h-full object-cover"
                 loading="lazy"
