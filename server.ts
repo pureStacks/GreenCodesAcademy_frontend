@@ -39,10 +39,13 @@ const readData = async () => {
   }
 
   // Fallback
-  if (!fs.existsSync(DATA_FILE)) {
+  try {
+    if (!fs.existsSync(DATA_FILE)) return {};
+    return JSON.parse(fs.readFileSync(DATA_FILE, 'utf8'));
+  } catch (err) {
+    console.warn('Local read fallback failed:', err.message);
     return {};
   }
-  return JSON.parse(fs.readFileSync(DATA_FILE, 'utf8'));
 };
 
 
@@ -56,7 +59,11 @@ const writeData = async (data: any) => {
     }));
     const { error } = await supabase.from('app_data').upsert(upserts, { onConflict: 'section_key' });
     if (!error) {
-       fs.writeFileSync(DATA_FILE, JSON.stringify(data, null, 2), 'utf8');
+       try {
+         fs.writeFileSync(DATA_FILE, JSON.stringify(data, null, 2), 'utf8');
+       } catch (err) {
+         console.warn('Local write fallback failed (expected on Vercel):', err.message);
+       }
        return;
     } else {
        console.error('Supabase write error:', error.message);
@@ -66,7 +73,11 @@ const writeData = async (data: any) => {
   }
   
   // Fallback to local
-  fs.writeFileSync(DATA_FILE, JSON.stringify(data, null, 2), 'utf8');
+  try {
+    fs.writeFileSync(DATA_FILE, JSON.stringify(data, null, 2), 'utf8');
+  } catch (err) {
+    console.warn('Local write fallback failed (expected on Vercel):', err.message);
+  }
 };
 
 
@@ -196,6 +207,8 @@ app.patch('/api/admin/enrollments/:id/status', authenticateToken, async (req, re
 });
 
 // Start server with Vite middleware
+export default app;
+
 async function startServer() {
   if (process.env.NODE_ENV !== "production") {
     const vite = await createViteServer({
@@ -216,4 +229,7 @@ async function startServer() {
   });
 }
 
-startServer();
+// Only start the server locally
+if (process.env.NODE_ENV !== 'production' || !process.env.VERCEL) {
+  startServer();
+}
