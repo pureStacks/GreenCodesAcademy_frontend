@@ -5,12 +5,13 @@
     "email": "greencodesacademy@gmail.com",
     "address": "123 Tech Avenue, Lagos, Nigeria.",
     "footerDescription": "Empowering the next generation of tech leaders.",
-    "copyright": "© 2026 Green Code Academy. All Rights Reserved."
+    "copyright": "© 2026 Green Code Academy. All Rights Reserved.",
+    "logo": "https://i.ibb.co/dsJrwsPC/temp.jpg"
   },
   "home": {
     "heroHeading": "BUILD THE SKILLS OF TOMORROW, TODAY.",
     "heroSubheading": "Empowering students, professionals, and entrepreneurs with practical technology and coding skills.",
-    "heroCtaText": "ENROLL NOW",
+    "heroCtaText": "ENROL NOW",
     "heroImage": "https://i.ibb.co/B2jpgXwv/test.jpg"
   },
   "programs": [

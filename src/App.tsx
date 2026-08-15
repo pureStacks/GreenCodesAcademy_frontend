@@ -20,6 +20,7 @@ import { SiteSettingsAdmin } from "@/src/pages/admin/SiteSettingsAdmin"
 import { TestimonialsAdmin } from "@/src/pages/admin/TestimonialsAdmin"
 import { FaqsAdmin } from "@/src/pages/admin/FaqsAdmin"
 import { WhyChooseUsAdmin } from "@/src/pages/admin/WhyChooseUsAdmin"
+import { SecurityAdmin } from "@/src/pages/admin/SecurityAdmin"
 
 export default function App() {
   const { fetchData, isLoading, data } = useAppStore();
@@ -48,6 +49,7 @@ export default function App() {
             <Route path="faqs" element={<FaqsAdmin />} />
             <Route path="enrollments" element={<EnrollmentsAdmin />} />
             <Route path="settings" element={<SiteSettingsAdmin />} />
+            <Route path="security" element={<SecurityAdmin />} />
             {/* We will add more admin routes here */}
           </Route>
 

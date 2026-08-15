@@ -30,27 +30,55 @@ export function Footer() {
           {/* Brand */}
           <div className="space-y-6">
             <div className="flex items-center gap-2 text-white">
-              <div className="bg-green-600 text-white p-1.5 rounded-lg">
-                <Code2 className="h-6 w-6" />
-              </div>
+              {siteData.logo ? (
+                <img src={siteData.logo} alt={siteName} className="h-8 w-auto object-contain brightness-0 invert" />
+              ) : (
+                <div className="bg-green-600 text-white p-1.5 rounded-lg">
+                  <Code2 className="h-6 w-6" />
+                </div>
+              )}
               <span className="font-bold text-xl tracking-tight">{siteName}</span>
             </div>
             <p className="text-gray-400 leading-relaxed max-w-xs">
               {footerDesc}
             </p>
             <div className="flex items-center gap-4">
-              <a href="#" className="text-gray-400 hover:text-white transition-colors" aria-label="Facebook">
-                <Facebook className="h-5 w-5" />
-              </a>
-              <a href="#" className="text-gray-400 hover:text-white transition-colors" aria-label="Twitter">
-                <Twitter className="h-5 w-5" />
-              </a>
-              <a href="#" className="text-gray-400 hover:text-white transition-colors" aria-label="Instagram">
-                <Instagram className="h-5 w-5" />
-              </a>
-              <a href="#" className="text-gray-400 hover:text-white transition-colors" aria-label="LinkedIn">
-                <Linkedin className="h-5 w-5" />
-              </a>
+              {siteData.facebook && (
+                <a href={siteData.facebook} target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white transition-colors" aria-label="Facebook">
+                  <Facebook className="h-5 w-5" />
+                </a>
+              )}
+              {siteData.twitter && (
+                <a href={siteData.twitter} target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white transition-colors" aria-label="Twitter">
+                  <Twitter className="h-5 w-5" />
+                </a>
+              )}
+              {siteData.instagram && (
+                <a href={siteData.instagram} target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white transition-colors" aria-label="Instagram">
+                  <Instagram className="h-5 w-5" />
+                </a>
+              )}
+              {siteData.linkedin && (
+                <a href={siteData.linkedin} target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white transition-colors" aria-label="LinkedIn">
+                  <Linkedin className="h-5 w-5" />
+                </a>
+              )}
+              {(!siteData.facebook && !siteData.twitter && !siteData.instagram && !siteData.linkedin) && (
+                <>
+                  <a href="#" className="text-gray-400 hover:text-white transition-colors" aria-label="Facebook">
+                    <Facebook className="h-5 w-5" />
+                  </a>
+                  <a href="#" className="text-gray-400 hover:text-white transition-colors" aria-label="Twitter">
+                    <Twitter className="h-5 w-5" />
+                  </a>
+                  <a href="#" className="text-gray-400 hover:text-white transition-colors" aria-label="Instagram">
+                    <Instagram className="h-5 w-5" />
+                  </a>
+                  <a href="#" className="text-gray-400 hover:text-white transition-colors" aria-label="LinkedIn">
+                    <Linkedin className="h-5 w-5" />
+                  </a>
+                </>
+              )}
             </div>
           </div>
 

@@ -15,7 +15,8 @@ import {
   Menu,
   X,
   CreditCard,
-  FileText
+  FileText,
+  Shield
 } from 'lucide-react';
 import { useState } from 'react';
 import { Button } from '@/src/components/ui/Button';
@@ -29,6 +30,7 @@ const adminNavItems = [
   { path: '/admin/faqs', label: 'FAQs', icon: FileText },
   { path: '/admin/enrollments', label: 'Enrollments', icon: CreditCard },
   { path: '/admin/settings', label: 'Site Settings', icon: Settings },
+  { path: '/admin/security', label: 'Security Settings', icon: Shield },
 ];
 
 export function AdminLayout() {

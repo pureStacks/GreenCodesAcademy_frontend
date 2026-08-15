@@ -65,6 +65,15 @@ export function SiteSettingsAdmin() {
                   required
                 />
               </div>
+              <div className="sm:col-span-2">
+                <label className="block text-sm font-medium text-gray-700 mb-1">Site Logo URL</label>
+                <Input 
+                  value={form.logo || ''} 
+                  onChange={e => setForm({...form, logo: e.target.value})}
+                  placeholder="https://i.ibb.co/..."
+                />
+                {form.logo && <img src={form.logo} alt="Logo Preview" className="mt-2 h-10 w-auto object-contain rounded border" />}
+              </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">WhatsApp Number</label>
                 <Input 
@@ -103,6 +112,46 @@ export function SiteSettingsAdmin() {
                 value={form.copyright || ''} 
                 onChange={e => setForm({...form, copyright: e.target.value})}
               />
+            </div>
+          </div>
+        </Card>
+
+        <Card className="p-6">
+          <h3 className="text-lg font-bold text-gray-900 mb-4 border-b pb-2">Social Media Links</h3>
+          <div className="space-y-4">
+            <div className="grid sm:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Facebook URL</label>
+                <Input 
+                  value={form.facebook || ''} 
+                  onChange={e => setForm({...form, facebook: e.target.value})}
+                  placeholder="https://facebook.com/..."
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Twitter URL</label>
+                <Input 
+                  value={form.twitter || ''} 
+                  onChange={e => setForm({...form, twitter: e.target.value})}
+                  placeholder="https://twitter.com/..."
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Instagram URL</label>
+                <Input 
+                  value={form.instagram || ''} 
+                  onChange={e => setForm({...form, instagram: e.target.value})}
+                  placeholder="https://instagram.com/..."
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">LinkedIn URL</label>
+                <Input 
+                  value={form.linkedin || ''} 
+                  onChange={e => setForm({...form, linkedin: e.target.value})}
+                  placeholder="https://linkedin.com/in/..."
+                />
+              </div>
             </div>
           </div>
         </Card>

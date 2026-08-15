@@ -3,6 +3,7 @@ import { Link, useLocation } from "react-router-dom"
 import { Menu, X, Code2, Lock } from "lucide-react"
 import { Button } from "@/src/components/ui/Button"
 import { cn } from "@/src/lib/utils"
+import { useAppStore } from "@/src/store"
 
 const navItems = [
   { name: "Home", path: "/" },
@@ -17,6 +18,8 @@ export function Header() {
   const [isOpen, setIsOpen] = React.useState(false)
   const [isScrolled, setIsScrolled] = React.useState(false)
   const location = useLocation()
+  const { data } = useAppStore();
+  const siteData = data?.site || {};
 
   React.useEffect(() => {
     const handleScroll = () => {
@@ -40,11 +43,15 @@ export function Header() {
       <div className="container mx-auto px-4 md:px-6 max-w-7xl">
         <div className="flex items-center justify-between">
           <Link to="/" className="flex items-center gap-2 text-green-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-600 rounded-lg p-1">
-            <div className="bg-green-700 text-white p-1.5 rounded-lg">
-              <Code2 className="h-6 w-6" />
-            </div>
-            <span className="font-bold text-xl tracking-tight hidden sm:block">Green Codes Academy</span>
-            <span className="font-bold text-xl tracking-tight sm:hidden">GCA</span>
+            {siteData.logo ? (
+              <img src={siteData.logo} alt={siteData.name} className="h-8 w-auto object-contain" />
+            ) : (
+              <div className="bg-green-700 text-white p-1.5 rounded-lg">
+                <Code2 className="h-6 w-6" />
+              </div>
+            )}
+            <span className="font-bold text-xl tracking-tight hidden sm:block">{siteData.name || 'Green Codes Academy'}</span>
+            <span className="font-bold text-xl tracking-tight sm:hidden">{siteData.name ? siteData.name.split(' ').map((w: string) => w[0]).join('') : 'GCA'}</span>
           </Link>
 
           {/* Desktop Nav */}
