@@ -42,7 +42,7 @@ export function SecurityAdmin() {
       // Update password
       await supabase.from('app_data').upsert({
         section_key: 'admin',
-        section_data: { password: newPassword }
+        section_data: { ...(data?.section_data || {}), password: newPassword }
       }, { onConflict: 'section_key' });
 
       toast.success('Password updated successfully');

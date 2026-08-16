@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAppStore, useAuthStore } from '@/src/store';
 import { Button } from '@/src/components/ui/Button';
 import { Input } from '@/src/components/ui/Input';
@@ -14,6 +14,12 @@ export function WhyChooseUsAdmin() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editForm, setEditForm] = useState<any>({});
   const [isSaving, setIsSaving] = useState(false);
+
+  useEffect(() => {
+    if (data?.whyChooseUs && editingId === null) {
+      setItems(data.whyChooseUs);
+    }
+  }, [data?.whyChooseUs, editingId]);
 
   const handleSave = async () => {
     setIsSaving(true);

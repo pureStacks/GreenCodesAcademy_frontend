@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAppStore, useAuthStore } from '@/src/store';
 import { Button } from '@/src/components/ui/Button';
 import { Input } from '@/src/components/ui/Input';
@@ -14,6 +14,12 @@ export function ProgramsAdmin() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editForm, setEditForm] = useState<any>({});
   const [isSaving, setIsSaving] = useState(false);
+
+  useEffect(() => {
+    if (data?.programs && editingId === null) {
+      setPrograms(data.programs);
+    }
+  }, [data?.programs, editingId]);
 
   const handleSave = async () => {
     setIsSaving(true);

@@ -5,6 +5,7 @@ interface AppState {
   data: any;
   isLoading: boolean;
   error: string | null;
+  isSubscribed: boolean;
   fetchData: (force?: boolean) => Promise<void>;
   updateSection: (section: string, payload: any, token: string) => Promise<void>;
   updateEnrollmentStatus: (id: string, status: string, token: string) => Promise<void>;
@@ -15,6 +16,7 @@ export const useAppStore = create<AppState>((set, get) => ({
   data: null,
   isLoading: true,
   error: null,
+  isSubscribed: false,
 
   fetchData: async (force = false) => {
     const state = get();
@@ -37,6 +39,28 @@ export const useAppStore = create<AppState>((set, get) => ({
       if (!fullData.enrollments) fullData.enrollments = [];
       
       set({ data: fullData, isLoading: false });
+
+      // Setup Realtime Subscription so changes reflect globally automatically
+      if (!get().isSubscribed) {
+        supabase.channel('public:app_data')
+          .on('postgres_changes', { event: '*', schema: 'public', table: 'app_data' }, (payload: any) => {
+            if (payload.new && payload.new.section_key) {
+              set((state) => {
+                if (!state.data) return state;
+                return {
+                  data: {
+                    ...state.data,
+                    [payload.new.section_key]: payload.new.section_data
+                  }
+                };
+              });
+            }
+          })
+          .subscribe();
+          
+        set({ isSubscribed: true });
+      }
+
     } catch (error: any) {
       set({ error: error.message, isLoading: false });
     }
