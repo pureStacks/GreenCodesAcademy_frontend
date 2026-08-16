@@ -3,111 +3,108 @@ import { useAuthStore } from '@/src/store';
 import { Button } from '@/src/components/ui/Button';
 import { Input } from '@/src/components/ui/Input';
 import { Card } from '@/src/components/ui/Card';
-import { Save, Lock } from 'lucide-react';
+import { Lock, Save, Loader2 } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { supabase } from '@/src/lib/supabase';
 
 export function SecurityAdmin() {
-  const { token } = useAuthStore();
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [isSaving, setIsSaving] = useState(false);
+  
+  const { token } = useAuthStore();
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSave = async () => {
     if (newPassword !== confirmPassword) {
       toast.error('New passwords do not match');
       return;
     }
     
-    if (newPassword.length < 6) {
-      toast.error('New password must be at least 6 characters');
-      return;
-    }
-
     setIsSaving(true);
     try {
-      const response = await fetch('/api/admin/change-password', {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({ currentPassword, newPassword })
-      });
-
-      const result = await response.json();
-
-      if (response.ok && result.success) {
-        toast.success('Password updated successfully');
-        setCurrentPassword('');
-        setNewPassword('');
-        setConfirmPassword('');
+      // In a pure frontend app, verify the current password against Supabase
+      const { data, error } = await supabase.from('app_data').select('*').eq('section_key', 'admin').single();
+      
+      let isValid = false;
+      if (!error && data && data.section_data?.password) {
+         isValid = (currentPassword === data.section_data.password);
       } else {
-        toast.error(result.error || 'Failed to update password');
+         isValid = (currentPassword === 'admin123'); // fallback
       }
-    } catch (error) {
-      toast.error('An error occurred');
+
+      if (!isValid) {
+        toast.error('Incorrect current password');
+        setIsSaving(false);
+        return;
+      }
+
+      // Update password
+      await supabase.from('app_data').upsert({
+        section_key: 'admin',
+        section_data: { password: newPassword }
+      }, { onConflict: 'section_key' });
+
+      toast.success('Password updated successfully');
+      setCurrentPassword('');
+      setNewPassword('');
+      setConfirmPassword('');
+    } catch (error: any) {
+      toast.error(error.message || 'Failed to update password');
     } finally {
       setIsSaving(false);
     }
   };
 
   return (
-    <div className="space-y-6 max-w-2xl">
-      <div>
-        <h2 className="text-2xl font-bold text-gray-900">Security Settings</h2>
-        <p className="text-gray-600 mt-1">Update your admin login credentials.</p>
+    <div className="space-y-6">
+      <div className="flex items-center gap-3 mb-6">
+        <Lock className="h-8 w-8 text-green-700" />
+        <h1 className="text-3xl font-bold text-gray-900">Security Settings</h1>
       </div>
 
-      <Card className="p-6">
-        <form onSubmit={handleSubmit} className="space-y-6">
+      <Card className="p-6 max-w-2xl">
+        <h3 className="text-lg font-medium text-gray-900 mb-4 border-b pb-4">Change Admin Password</h3>
+        
+        <div className="space-y-4">
           <div>
-            <label className="block text-sm font-medium mb-1 text-gray-700">Current Password</label>
-            <div className="relative">
-              <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-              <Input 
-                type="password"
-                required
-                value={currentPassword} 
-                onChange={e => setCurrentPassword(e.target.value)} 
-                className="pl-10"
-              />
-            </div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Current Password</label>
+            <Input 
+              type="password" 
+              value={currentPassword}
+              onChange={(e) => setCurrentPassword(e.target.value)}
+            />
           </div>
           
-          <div className="border-t pt-6">
-            <label className="block text-sm font-medium mb-1 text-gray-700">New Password</label>
-            <div className="relative mb-4">
-              <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-              <Input 
-                type="password"
-                required
-                value={newPassword} 
-                onChange={e => setNewPassword(e.target.value)} 
-                className="pl-10"
-              />
-            </div>
-            
-            <label className="block text-sm font-medium mb-1 text-gray-700">Confirm New Password</label>
-            <div className="relative">
-              <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-              <Input 
-                type="password"
-                required
-                value={confirmPassword} 
-                onChange={e => setConfirmPassword(e.target.value)} 
-                className="pl-10"
-              />
-            </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">New Password</label>
+            <Input 
+              type="password" 
+              value={newPassword}
+              onChange={(e) => setNewPassword(e.target.value)}
+            />
           </div>
-
-          <div className="flex justify-end pt-4">
-            <Button type="submit" className="bg-green-700 hover:bg-green-800 gap-2" disabled={isSaving}>
-              <Save className="h-4 w-4" /> {isSaving ? 'Updating...' : 'Update Password'}
+          
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Confirm New Password</label>
+            <Input 
+              type="password" 
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+            />
+          </div>
+          
+          <div className="pt-4 flex justify-end">
+            <Button 
+              onClick={handleSave} 
+              disabled={isSaving || !currentPassword || !newPassword || !confirmPassword}
+              className="bg-green-700 hover:bg-green-800"
+            >
+              {isSaving ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Save className="h-4 w-4 mr-2" />}
+              Update Password
             </Button>
           </div>
-        </form>
+        </div>
       </Card>
     </div>
   );

@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { supabase } from '@/src/lib/supabase';
 
 interface AppState {
   data: any;
@@ -6,42 +7,121 @@ interface AppState {
   error: string | null;
   fetchData: (force?: boolean) => Promise<void>;
   updateSection: (section: string, payload: any, token: string) => Promise<void>;
+  updateEnrollmentStatus: (id: string, status: string, token: string) => Promise<void>;
+  addEnrollment: (enrollment: any) => Promise<void>;
 }
 
 export const useAppStore = create<AppState>((set, get) => ({
   data: null,
   isLoading: true,
   error: null,
+
   fetchData: async (force = false) => {
     const state = get();
     if (state.data && !force) return; // Prevent duplicate fetches
+    
     try {
       set({ isLoading: true, error: null });
-      const response = await fetch('/api/data');
-      if (!response.ok) throw new Error('Failed to fetch data');
-      const data = await response.json();
-      set({ data, isLoading: false });
+      
+      const { data: rawData, error } = await supabase.from('app_data').select('*');
+      if (error) throw error;
+      
+      const fullData: any = {};
+      if (rawData) {
+        rawData.forEach(row => {
+          fullData[row.section_key] = row.section_data;
+        });
+      }
+      
+      // Ensure enrollments array exists
+      if (!fullData.enrollments) fullData.enrollments = [];
+      
+      set({ data: fullData, isLoading: false });
     } catch (error: any) {
       set({ error: error.message, isLoading: false });
     }
   },
+
   updateSection: async (section, payload, token) => {
     try {
-      const response = await fetch(`/api/admin/data/${section}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify(payload)
-      });
-      if (!response.ok) throw new Error('Failed to update data');
-      const result = await response.json();
+      // Direct upsert to Supabase
+      const { error } = await supabase.from('app_data').upsert({
+        section_key: section,
+        section_data: payload
+      }, { onConflict: 'section_key' });
+      
+      if (error) throw error;
       
       set((state) => ({
         data: {
           ...state.data,
-          [section]: result.section
+          [section]: payload
+        }
+      }));
+    } catch (error: any) {
+      throw error;
+    }
+  },
+  
+  updateEnrollmentStatus: async (id, status, token) => {
+    try {
+      const state = get();
+      if (!state.data) throw new Error('No data loaded');
+      
+      const enrollments = [...(state.data.enrollments || [])];
+      const index = enrollments.findIndex((e: any) => e.id === id);
+      
+      if (index === -1) throw new Error('Enrollment not found');
+      
+      enrollments[index].status = status;
+      
+      // Upsert back to Supabase
+      const { error } = await supabase.from('app_data').upsert({
+        section_key: 'enrollments',
+        section_data: enrollments
+      }, { onConflict: 'section_key' });
+      
+      if (error) throw error;
+      
+      set((state) => ({
+        data: {
+          ...state.data,
+          enrollments
+        }
+      }));
+    } catch (error: any) {
+      throw error;
+    }
+  },
+  
+  addEnrollment: async (enrollment) => {
+    try {
+      const state = get();
+      // Ensure data is loaded
+      if (!state.data) await get().fetchData(true);
+      
+      const enrollments = [...(get().data?.enrollments || [])];
+      
+      const newEnrollment = {
+        id: Date.now().toString(),
+        ...enrollment,
+        status: 'new',
+        createdAt: new Date().toISOString()
+      };
+      
+      enrollments.push(newEnrollment);
+      
+      const { error } = await supabase.from('app_data').upsert({
+        section_key: 'enrollments',
+        section_data: enrollments
+      }, { onConflict: 'section_key' });
+      
+      if (error) throw error;
+      
+      set((state) => ({
+        data: {
+          ...state.data,
+          enrollments
         }
       }));
     } catch (error: any) {

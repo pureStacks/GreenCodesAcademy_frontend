@@ -6,6 +6,7 @@ import { Input } from '@/src/components/ui/Input';
 import { Card } from '@/src/components/ui/Card';
 import { Lock, Eye, EyeOff, Loader2 } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { supabase } from '@/src/lib/supabase';
 
 export function AdminLogin() {
   const [password, setPassword] = useState('');
@@ -19,20 +20,27 @@ export function AdminLogin() {
     setIsLoading(true);
 
     try {
-      const response = await fetch('/api/auth/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ password })
-      });
+      // In a pure frontend app with basic auth (no backend), we can fetch the hashed pass or just do a simple string comparison for a prototype.
+      // The previous backend had "admin123" fallback or bcrypt. Since we can't securely bcrypt in pure browser JS easily without pulling heavy libs, we'll use a basic check.
+      // But let's check Supabase first to see if an admin password hash exists
+      
+      const { data, error } = await supabase.from('app_data').select('*').eq('section_key', 'admin').single();
+      
+      let isValid = false;
+      if (!error && data && data.section_data?.password) {
+         // Using plain text check for now since backend is gone. A real prod app would use Supabase Auth.
+         isValid = (password === data.section_data.password);
+      } else {
+         isValid = (password === 'admin123'); // fallback
+      }
 
-      const data = await response.json();
-
-      if (response.ok) {
-        login(data.token);
+      if (isValid) {
+        // Generating a dummy token since there's no backend to verify it anyway
+        login('dummy-jwt-token-for-frontend-auth');
         toast.success('Login successful');
         navigate('/admin');
       } else {
-        toast.error(data.error || 'Invalid credentials');
+        toast.error('Invalid credentials');
       }
     } catch (error) {
       toast.error('An error occurred. Please try again.');

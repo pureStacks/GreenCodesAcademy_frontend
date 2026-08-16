@@ -7,42 +7,24 @@ import { Input } from '@/src/components/ui/Input';
 import toast from 'react-hot-toast';
 
 export function EnrollmentsAdmin() {
-  const { data, fetchData } = useAppStore();
+  const { data, fetchData, updateEnrollmentStatus } = useAppStore();
   const { token } = useAuthStore();
   const [searchTerm, setSearchTerm] = useState('');
-  const [enrollments, setEnrollments] = useState(data?.enrollments || []);
+  
+  // We don't need local state for enrollments anymore, store handles it
   const [isUpdating, setIsUpdating] = useState<string | null>(null);
 
   useEffect(() => {
-    // If enrollments is missing from public data, we need to fetch full admin data
-    const fetchAdminData = async () => {
-      try {
-        const res = await fetch('/api/admin/data', {
-          headers: { 'Authorization': `Bearer ${token}` }
-        });
-        const fullData = await res.json();
-        setEnrollments(fullData.enrollments || []);
-      } catch (e) {
-        console.error(e);
-      }
-    };
-    fetchAdminData();
-  }, [token]);
+    // We already fetch all data in the pure frontend store, but let's ensure it's loaded
+    fetchData(true);
+  }, [fetchData]);
+
+  const enrollments = data?.enrollments || [];
 
   const updateStatus = async (id: string, status: string) => {
     setIsUpdating(id);
     try {
-      const res = await fetch(`/api/admin/enrollments/${id}/status`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({ status })
-      });
-      if (!res.ok) throw new Error();
-      
-      setEnrollments(enrollments.map((e: any) => e.id === id ? { ...e, status } : e));
+      await updateEnrollmentStatus(id, status, token as string);
       toast.success('Status updated');
     } catch {
       toast.error('Failed to update status');
