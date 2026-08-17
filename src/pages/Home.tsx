@@ -6,6 +6,7 @@ import { Hero } from "@/src/components/sections/Hero"
 import { Countdown } from "@/src/components/sections/Countdown"
 import { CTA } from "@/src/components/sections/CTA"
 import { PhysicalCampus } from "@/src/components/sections/PhysicalCampus"
+import { FAQSection } from "@/src/components/sections/FAQSection"
 import { Card } from "@/src/components/ui/Card"
 import { Button } from "@/src/components/ui/Button"
 import { useAppStore } from "@/src/store"
@@ -14,6 +15,12 @@ export function Home() {
   const { data } = useAppStore();
   const programs = data?.programs?.filter((p: any) => p.published).slice(0, 3) || [];
   const testimonials = data?.testimonials?.filter((t: any) => t.published).slice(0, 3) || [];
+  const homeData = data?.home || {};
+  const whyChooseUs = data?.whyChooseUs || [
+    { title: "Practical Training", description: "Students learn by doing and building real projects." },
+    { title: "Experienced Instructors", description: "Guidance from knowledgeable industry professionals." },
+    { title: "Modern Learning Environment", description: "Comfortable physical classrooms for effective learning." }
+  ];
 
   const getIcon = (index: number) => {
     const icons = [
@@ -95,18 +102,14 @@ export function Home() {
               </p>
 
               <div className="space-y-6 mb-10">
-                {[
-                  { title: "Practical Training", desc: "Students learn by doing and building real projects." },
-                  { title: "Experienced Instructors", desc: "Guidance from knowledgeable industry professionals." },
-                  { title: "Modern Learning Environment", desc: "Comfortable physical classrooms for effective learning." }
-                ].map((feature, idx) => (
+                {whyChooseUs.slice(0, 3).map((feature: any, idx: number) => (
                   <div key={idx} className="flex gap-4">
                     <div className="bg-green-100 p-1 rounded-full h-fit mt-1">
                       <CheckCircle2 className="h-5 w-5 text-green-700" />
                     </div>
                     <div>
                       <h4 className="font-bold text-gray-900 mb-1">{feature.title}</h4>
-                      <p className="text-gray-600">{feature.desc}</p>
+                      <p className="text-gray-600">{feature.description || feature.desc}</p>
                     </div>
                   </div>
                 ))}
@@ -127,25 +130,25 @@ export function Home() {
               <div className="space-y-4">
                 <div className="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 aspect-square flex flex-col items-center justify-center text-center hover:-translate-y-1 transition-transform">
                   <Users className="h-10 w-10 text-yellow-500 mb-3" />
-                  <div className="text-3xl font-bold text-gray-900 mb-1">500+</div>
-                  <div className="text-sm font-medium text-gray-500 uppercase">Students Trained</div>
+                  <div className="text-3xl font-bold text-gray-900 mb-1">{homeData?.stat1Value || "500+"}</div>
+                  <div className="text-sm font-medium text-gray-500 uppercase">{homeData?.stat1Label || "Students Trained"}</div>
                 </div>
                 <div className="bg-green-700 p-6 rounded-3xl shadow-md aspect-square flex flex-col items-center justify-center text-center text-white hover:-translate-y-1 transition-transform">
                   <Award className="h-10 w-10 text-green-300 mb-3" />
-                  <div className="text-3xl font-bold mb-1">95%</div>
-                  <div className="text-sm font-medium text-green-100 uppercase">Success Rate</div>
+                  <div className="text-3xl font-bold mb-1">{homeData?.stat2Value || "95%"}</div>
+                  <div className="text-sm font-medium text-green-100 uppercase">{homeData?.stat2Label || "Success Rate"}</div>
                 </div>
               </div>
               <div className="space-y-4 mt-8">
                 <div className="bg-yellow-400 p-6 rounded-3xl shadow-md aspect-square flex flex-col items-center justify-center text-center text-yellow-950 hover:-translate-y-1 transition-transform">
                   <Briefcase className="h-10 w-10 text-yellow-700 mb-3" />
-                  <div className="text-3xl font-bold mb-1">20+</div>
-                  <div className="text-sm font-medium text-yellow-800 uppercase">Practical Projects</div>
+                  <div className="text-3xl font-bold mb-1">{homeData?.stat3Value || "20+"}</div>
+                  <div className="text-sm font-medium text-yellow-800 uppercase">{homeData?.stat3Label || "Practical Projects"}</div>
                 </div>
                 <div className="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 aspect-square flex flex-col items-center justify-center text-center hover:-translate-y-1 transition-transform">
                   <Code className="h-10 w-10 text-green-600 mb-3" />
-                  <div className="text-3xl font-bold text-gray-900 mb-1">10+</div>
-                  <div className="text-sm font-medium text-gray-500 uppercase">Tech Programs</div>
+                  <div className="text-3xl font-bold text-gray-900 mb-1">{homeData?.stat4Value || "10+"}</div>
+                  <div className="text-sm font-medium text-gray-500 uppercase">{homeData?.stat4Label || "Tech Programs"}</div>
                 </div>
               </div>
             </motion.div>
@@ -202,6 +205,8 @@ export function Home() {
           </Link>
         </div>
       </section>
+
+      <FAQSection />
 
       <CTA />
     </>

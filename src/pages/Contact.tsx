@@ -11,7 +11,31 @@ import { useAppStore } from "@/src/store"
 export function Contact() {
   const { data } = useAppStore();
   const siteData = data?.site || {};
-  const faqs = data?.faqs?.filter((f: any) => f.published) || [];
+  const contactData = data?.contact || {};
+  const defaultFaqs = [
+    {
+      question: 'Do I need prior coding experience to join?',
+      answer: 'No prior coding experience is required for our beginner programs! We start with the core fundamentals and gradually advance through practical, project-based exercises with live instructor support.'
+    },
+    {
+      question: 'What are the class schedules and learning modes?',
+      answer: 'We offer flexible physical classroom schedules including Weekday morning/afternoon batches and Weekend intensive batches to accommodate both full-time students and working professionals.'
+    },
+    {
+      question: 'Are the training sessions strictly in-person?',
+      answer: 'Yes! Green Codes Academy is an immersive, physical tech academy with high-speed internet, continuous power supply, and modern workstations to ensure hands-on, distraction-free learning.'
+    },
+    {
+      question: 'Do I get a certificate upon course completion?',
+      answer: 'Yes, all students who successfully complete their coursework and capstone projects receive an accredited Certificate of Completion from Green Codes Academy.'
+    }
+  ];
+
+  const rawFaqs = data?.faqs || defaultFaqs;
+  const faqs = rawFaqs.filter((f: any) => f.published !== false);
+  
+  const heading = contactData.heading || "Get in Touch";
+  const subheading = contactData.subheading || "Have questions? We'd love to hear from you. Send us a message or visit our physical campus.";
 
   const phone = siteData.whatsapp || "+234 903 088 2127";
   const email = siteData.email || "greencodesacademy@gmail.com";
@@ -44,10 +68,10 @@ export function Contact() {
             transition={{ duration: 0.5 }}
           >
             <h1 className="text-4xl md:text-5xl font-bold mb-6">
-              Get in Touch
+              {heading}
             </h1>
             <p className="text-lg md:text-xl text-green-100 max-w-2xl mx-auto">
-              Have questions? We'd love to hear from you. Send us a message or visit our physical campus.
+              {subheading}
             </p>
           </motion.div>
         </div>

@@ -11,13 +11,11 @@ export function SiteSettingsAdmin() {
   const { data, updateSection } = useAppStore();
   const { token } = useAuthStore();
   const [form, setForm] = useState(data?.site || {});
-  const [aboutForm, setAboutForm] = useState(data?.about || {});
   const [campusForm, setCampusForm] = useState(data?.campus || {});
   const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
     if (data?.site) setForm(data.site);
-    if (data?.about) setAboutForm(data.about);
     if (data?.campus) setCampusForm(data.campus);
   }, [data]);
 
@@ -26,7 +24,6 @@ export function SiteSettingsAdmin() {
     setIsSaving(true);
     try {
       await updateSection('site', form, token!);
-      await updateSection('about', aboutForm, token!);
       await updateSection('campus', campusForm, token!);
       toast.success('Settings updated successfully');
     } catch (error) {
@@ -160,16 +157,6 @@ export function SiteSettingsAdmin() {
           <h3 className="text-lg font-bold text-gray-900 mb-4 border-b pb-2">Global Images</h3>
           <div className="space-y-6">
             <div>
-              <h4 className="font-semibold text-gray-800 mb-2">About Page Image</h4>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Image URL (e.g. https://i.ibb.co/...)</label>
-              <Input 
-                value={aboutForm.image || ''} 
-                onChange={e => setAboutForm({...aboutForm, image: e.target.value})}
-              />
-              {aboutForm.image && <img src={aboutForm.image} alt="Preview" className="mt-2 h-32 w-auto object-cover rounded shadow-sm border" />}
-            </div>
-            
-            <div className="pt-4 border-t">
               <h4 className="font-semibold text-gray-800 mb-2">Campus Images</h4>
               <div className="grid md:grid-cols-3 gap-4">
                 <div>
@@ -204,7 +191,6 @@ export function SiteSettingsAdmin() {
         <div className="flex justify-end gap-4">
           <Button type="button" variant="outline" onClick={() => {
             setForm(data?.site || {});
-            setAboutForm(data?.about || {});
             setCampusForm(data?.campus || {});
           }}>Reset</Button>
           <Button type="submit" className="bg-green-700 hover:bg-green-800 gap-2" disabled={isSaving}>

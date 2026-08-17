@@ -5,21 +5,27 @@ import { Button } from "@/src/components/ui/Button"
 import { cn } from "@/src/lib/utils"
 import { useAppStore } from "@/src/store"
 
-const navItems = [
-  { name: "Home", path: "/" },
-  { name: "About", path: "/about" },
-  { name: "Programs", path: "/programs" },
-  { name: "Why Choose Us", path: "/why-choose-us" },
-  { name: "Testimonials", path: "/testimonials" },
-  { name: "Contact", path: "/contact" },
-]
-
 export function Header() {
   const [isOpen, setIsOpen] = React.useState(false)
   const [isScrolled, setIsScrolled] = React.useState(false)
   const location = useLocation()
+  
   const { data } = useAppStore();
   const siteData = data?.site || {};
+  const navigation = data?.navigation || {
+    links: [
+      { name: "Home", path: "/" },
+      { name: "About", path: "/about" },
+      { name: "Programs", path: "/programs" },
+      { name: "Why Choose Us", path: "/why-choose-us" },
+      { name: "Testimonials", path: "/testimonials" },
+      { name: "Contact", path: "/contact" },
+    ],
+    cta: { text: "ENROLL NOW", url: "/enrollment" }
+  };
+  
+  const navItems = navigation.links || [];
+  const cta = navigation.cta || { text: "ENROLL NOW", url: "/enrollment" };
 
   React.useEffect(() => {
     const handleScroll = () => {
@@ -77,9 +83,9 @@ export function Header() {
               <Lock className="h-4 w-4" />
             </Link>
             
-            <Link to="/enrollment" tabIndex={-1}>
+            <Link to={cta.url} tabIndex={-1}>
               <Button size="sm" className="hidden md:inline-flex px-6">
-                ENROLL NOW
+                {cta.text}
               </Button>
             </Link>
             
@@ -113,8 +119,8 @@ export function Header() {
             </Link>
           ))}
           <div className="pt-4 mt-2 border-t border-gray-100">
-            <Link to="/enrollment" tabIndex={-1} className="block w-full">
-              <Button className="w-full">ENROLL NOW</Button>
+            <Link to={cta.url} tabIndex={-1} className="block w-full">
+              <Button className="w-full">{cta.text}</Button>
             </Link>
           </div>
         </div>

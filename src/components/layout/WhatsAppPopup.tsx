@@ -3,14 +3,29 @@ import { MessageCircle, X } from "lucide-react"
 import { Button } from "@/src/components/ui/Button"
 import { cn } from "@/src/lib/utils"
 import { motion, AnimatePresence } from "motion/react"
+import { useAppStore } from "@/src/store"
 
 export function WhatsAppPopup() {
+  const { data } = useAppStore();
+  const config = data?.whatsappPopup || {
+    enabled: true,
+    heading: "NEED HELP WITH ENROLLMENT?",
+    description: "Have questions about our programs, fees, schedule, or enrollment? Chat with us on WhatsApp.",
+    buttonText: "CHAT ON WHATSAPP",
+    prefilledMessage: "Hello Green Codes Academy, I would like to learn more about enrollment and your available programs."
+  };
+  
+  const siteData = data?.site || {};
+  const phone = siteData.whatsapp || "+234 903 088 2127";
+  const cleanPhone = phone.replace(/\s/g, '').replace('+', '');
+
   const [isOpen, setIsOpen] = React.useState(false)
 
+  if (!config.enabled) return null;
+
   const handleWhatsAppClick = () => {
-    const phoneNumber = "2349030882127"
-    const message = encodeURIComponent("Hello Green Codes Academy, I would like to learn more about enrollment and your available programs.")
-    window.open(`https://wa.me/${phoneNumber}?text=${message}`, "_blank")
+    const message = encodeURIComponent(config.prefilledMessage);
+    window.open(`https://wa.me/${cleanPhone}?text=${message}`, "_blank")
   }
 
   return (
@@ -26,7 +41,7 @@ export function WhatsAppPopup() {
           >
             <div className="bg-[#25D366] p-4 text-white flex justify-between items-start">
               <div>
-                <h3 className="font-bold text-lg leading-tight">NEED HELP WITH ENROLLMENT?</h3>
+                <h3 className="font-bold text-lg leading-tight">{config.heading}</h3>
               </div>
               <button 
                 onClick={() => setIsOpen(false)}
@@ -36,13 +51,14 @@ export function WhatsAppPopup() {
                 <X className="h-5 w-5" />
               </button>
             </div>
+            
             <div className="p-5">
               <p className="text-gray-600 text-sm mb-4 leading-relaxed">
-                Have questions about our programs, fees, schedule, or enrollment? Chat with us on WhatsApp.
+                {config.description}
               </p>
               <Button variant="whatsapp" className="w-full gap-2" onClick={handleWhatsAppClick}>
                 <MessageCircle className="h-5 w-5" />
-                CHAT ON WHATSAPP
+                {config.buttonText}
               </Button>
             </div>
           </motion.div>

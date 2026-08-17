@@ -3,7 +3,7 @@ import { useAuthStore } from '@/src/store';
 import { Button } from '@/src/components/ui/Button';
 import { Input } from '@/src/components/ui/Input';
 import { Card } from '@/src/components/ui/Card';
-import { Lock, Save, Loader2 } from 'lucide-react';
+import { Lock, Save, Loader2, Eye, EyeOff } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { supabase } from '@/src/lib/supabase';
 
@@ -11,11 +11,17 @@ export function SecurityAdmin() {
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [showCurrentPassword, setShowCurrentPassword] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   
-  const { token } = useAuthStore();
-
   const handleSave = async () => {
+    if (newPassword.length < 8) {
+      toast.error('New password must be at least 8 characters');
+      return;
+    }
+
     if (newPassword !== confirmPassword) {
       toast.error('New passwords do not match');
       return;
@@ -23,27 +29,24 @@ export function SecurityAdmin() {
     
     setIsSaving(true);
     try {
-      // In a pure frontend app, verify the current password against Supabase
-      const { data, error } = await supabase.from('app_data').select('*').eq('section_key', 'admin').single();
-      
-      let isValid = false;
-      if (!error && data && data.section_data?.password) {
-         isValid = (currentPassword === data.section_data.password);
-      } else {
-         isValid = (currentPassword === 'admin123'); // fallback
-      }
+      // Re-authenticate to verify current password
+      const { error: signInError } = await supabase.auth.signInWithPassword({
+        email: 'kehindehusseinpopoola@gmail.com',
+        password: currentPassword,
+      });
 
-      if (!isValid) {
+      if (signInError) {
         toast.error('Incorrect current password');
         setIsSaving(false);
         return;
       }
 
       // Update password
-      await supabase.from('app_data').upsert({
-        section_key: 'admin',
-        section_data: { ...(data?.section_data || {}), password: newPassword }
-      }, { onConflict: 'section_key' });
+      const { error: updateError } = await supabase.auth.updateUser({
+        password: newPassword
+      });
+
+      if (updateError) throw updateError;
 
       toast.success('Password updated successfully');
       setCurrentPassword('');
@@ -69,29 +72,58 @@ export function SecurityAdmin() {
         <div className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Current Password</label>
-            <Input 
-              type="password" 
-              value={currentPassword}
-              onChange={(e) => setCurrentPassword(e.target.value)}
-            />
+            <div className="relative">
+              <Input 
+                type={showCurrentPassword ? 'text' : 'password'} 
+                value={currentPassword}
+                onChange={(e) => setCurrentPassword(e.target.value)}
+              />
+              <button
+                type="button"
+                className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                onClick={() => setShowCurrentPassword(!showCurrentPassword)}
+              >
+                {showCurrentPassword ? <EyeOff className="h-4 w-4 text-gray-400" /> : <Eye className="h-4 w-4 text-gray-400" />}
+              </button>
+            </div>
           </div>
           
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">New Password</label>
-            <Input 
-              type="password" 
-              value={newPassword}
-              onChange={(e) => setNewPassword(e.target.value)}
-            />
+            <div className="relative">
+              <Input 
+                type={showNewPassword ? 'text' : 'password'} 
+                placeholder="Min 8 characters"
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+              />
+              <button
+                type="button"
+                className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                onClick={() => setShowNewPassword(!showNewPassword)}
+              >
+                {showNewPassword ? <EyeOff className="h-4 w-4 text-gray-400" /> : <Eye className="h-4 w-4 text-gray-400" />}
+              </button>
+            </div>
           </div>
           
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Confirm New Password</label>
-            <Input 
-              type="password" 
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-            />
+            <div className="relative">
+              <Input 
+                type={showConfirmPassword ? 'text' : 'password'} 
+                placeholder="Min 8 characters"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+              />
+              <button
+                type="button"
+                className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+              >
+                {showConfirmPassword ? <EyeOff className="h-4 w-4 text-gray-400" /> : <Eye className="h-4 w-4 text-gray-400" />}
+              </button>
+            </div>
           </div>
           
           <div className="pt-4 flex justify-end">

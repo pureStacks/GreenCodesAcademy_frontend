@@ -23,13 +23,18 @@ import { Button } from '@/src/components/ui/Button';
 
 const adminNavItems = [
   { path: '/admin', label: 'Dashboard Overview', icon: LayoutDashboard },
+  { path: '/admin/settings', label: 'Global Settings', icon: Settings },
+  { path: '/admin/navigation', label: 'Navigation Menu', icon: Menu },
   { path: '/admin/home', label: 'Home Page', icon: Home },
+  { path: '/admin/countdown', label: 'Countdown Timer', icon: CheckCircle },
+  { path: '/admin/about', label: 'About Page', icon: Info },
   { path: '/admin/programs', label: 'Programs', icon: BookOpen },
   { path: '/admin/why-choose-us', label: 'Why Choose Us', icon: CheckCircle },
-  { path: '/admin/testimonials', label: 'Testimonials', icon: MessageSquare },
+  { path: '/admin/testimonials', label: 'Testimonials / Reviews', icon: MessageSquare },
   { path: '/admin/faqs', label: 'FAQs', icon: FileText },
+  { path: '/admin/contact', label: 'Contact Page', icon: MapPin },
+  { path: '/admin/popups', label: 'Popups & Notifications', icon: MessageSquare },
   { path: '/admin/enrollments', label: 'Enrollments', icon: CreditCard },
-  { path: '/admin/settings', label: 'Site Settings', icon: Settings },
   { path: '/admin/security', label: 'Security Settings', icon: Shield },
 ];
 

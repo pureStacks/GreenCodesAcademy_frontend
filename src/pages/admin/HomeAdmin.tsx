@@ -38,8 +38,9 @@ export function HomeAdmin() {
       </div>
 
       <form onSubmit={handleSave} className="space-y-6">
-        <Card className="p-6">
-          <h3 className="text-lg font-bold text-gray-900 mb-4 border-b pb-2">Hero Section</h3>
+        <Card className="p-6 space-y-6">
+          <h3 className="text-lg font-bold text-gray-900 border-b pb-2">Hero Section</h3>
+          
           <div className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Hero Heading</label>
@@ -49,17 +50,18 @@ export function HomeAdmin() {
                 placeholder="e.g. BUILD THE SKILLS OF TOMORROW, TODAY."
               />
             </div>
-            
+
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Hero Subheading</label>
               <Textarea 
                 value={form.heroSubheading || ''} 
                 onChange={e => setForm({...form, heroSubheading: e.target.value})}
-                placeholder="Brief description below the heading..."
+                placeholder="Brief description under the main heading..."
+                rows={3}
               />
             </div>
-
-            <div className="grid grid-cols-2 gap-4">
+            
+            <div className="grid md:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Primary CTA Text</label>
                 <Input 
@@ -69,7 +71,7 @@ export function HomeAdmin() {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Hero Image URL (from ImgBB)</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Hero Image URL</label>
                 <Input 
                   value={form.heroImage || ''} 
                   onChange={e => setForm({...form, heroImage: e.target.value})}
@@ -77,18 +79,68 @@ export function HomeAdmin() {
                 />
               </div>
             </div>
-            {form.heroImage && (
-              <div className="mt-4 border rounded-xl overflow-hidden max-w-sm">
-                <img src={form.heroImage} alt="Hero preview" className="w-full h-auto" />
+          </div>
+        </Card>
+        
+        <Card className="p-6 space-y-6">
+          <h3 className="text-lg font-bold text-gray-900 border-b pb-2">Statistics Grid</h3>
+          <p className="text-sm text-gray-500">Update the 4 statistics shown on the home page.</p>
+          
+          <div className="grid md:grid-cols-2 gap-8">
+            <div className="space-y-4 p-4 border rounded-xl bg-gray-50">
+              <h4 className="font-semibold text-gray-700">Statistic 1 (Top Left)</h4>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Value</label>
+                <Input value={form.stat1Value || ''} onChange={e => setForm({...form, stat1Value: e.target.value})} placeholder="e.g. 500+" />
               </div>
-            )}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Label</label>
+                <Input value={form.stat1Label || ''} onChange={e => setForm({...form, stat1Label: e.target.value})} placeholder="e.g. Students Trained" />
+              </div>
+            </div>
+            
+            <div className="space-y-4 p-4 border rounded-xl bg-gray-50">
+              <h4 className="font-semibold text-gray-700">Statistic 2 (Bottom Left)</h4>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Value</label>
+                <Input value={form.stat2Value || ''} onChange={e => setForm({...form, stat2Value: e.target.value})} placeholder="e.g. 95%" />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Label</label>
+                <Input value={form.stat2Label || ''} onChange={e => setForm({...form, stat2Label: e.target.value})} placeholder="e.g. Success Rate" />
+              </div>
+            </div>
+            
+            <div className="space-y-4 p-4 border rounded-xl bg-gray-50">
+              <h4 className="font-semibold text-gray-700">Statistic 3 (Top Right)</h4>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Value</label>
+                <Input value={form.stat3Value || ''} onChange={e => setForm({...form, stat3Value: e.target.value})} placeholder="e.g. 20+" />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Label</label>
+                <Input value={form.stat3Label || ''} onChange={e => setForm({...form, stat3Label: e.target.value})} placeholder="e.g. Practical Projects" />
+              </div>
+            </div>
+            
+            <div className="space-y-4 p-4 border rounded-xl bg-gray-50">
+              <h4 className="font-semibold text-gray-700">Statistic 4 (Bottom Right)</h4>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Value</label>
+                <Input value={form.stat4Value || ''} onChange={e => setForm({...form, stat4Value: e.target.value})} placeholder="e.g. 10+" />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Label</label>
+                <Input value={form.stat4Label || ''} onChange={e => setForm({...form, stat4Label: e.target.value})} placeholder="e.g. Tech Programs" />
+              </div>
+            </div>
           </div>
         </Card>
 
-        <div className="flex justify-end gap-4">
-          <Button type="button" variant="outline" onClick={() => setForm(data?.home || {})}>Reset to Saved</Button>
-          <Button type="submit" className="bg-green-700 hover:bg-green-800 gap-2" disabled={isSaving}>
-            <Save className="h-4 w-4" /> {isSaving ? 'Saving...' : 'Save Changes'}
+        <div className="flex justify-end">
+          <Button type="submit" size="lg" disabled={isSaving} className="px-8">
+            <Save className="h-4 w-4 mr-2" />
+            {isSaving ? 'Saving...' : 'Save Changes'}
           </Button>
         </div>
       </form>

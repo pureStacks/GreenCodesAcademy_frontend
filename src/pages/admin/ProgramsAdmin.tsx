@@ -5,15 +5,18 @@ import { Input } from '@/src/components/ui/Input';
 import { Textarea } from '@/src/components/ui/Textarea';
 import { Card } from '@/src/components/ui/Card';
 import { Edit, Trash, Plus, Check, X } from 'lucide-react';
+import { ConfirmModal } from '@/src/components/ui/ConfirmModal';
 import toast from 'react-hot-toast';
 
 export function ProgramsAdmin() {
   const { data, updateSection } = useAppStore();
   const { token } = useAuthStore();
-  const [programs, setPrograms] = useState(data?.programs || []);
+  
+  const [programs, setPrograms] = useState<any[]>(data?.programs || []);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editForm, setEditForm] = useState<any>({});
   const [isSaving, setIsSaving] = useState(false);
+  const [deletingProgram, setDeletingProgram] = useState<{ id: string; name: string } | null>(null);
 
   useEffect(() => {
     if (data?.programs && editingId === null) {
@@ -21,10 +24,10 @@ export function ProgramsAdmin() {
     }
   }, [data?.programs, editingId]);
 
-  const handleSave = async () => {
+  const handleSave = async (updatedPrograms: any[]) => {
     setIsSaving(true);
     try {
-      await updateSection('programs', programs, token!);
+      await updateSection('programs', updatedPrograms, token!);
       toast.success('Programs updated successfully');
       setEditingId(null);
     } catch (error) {
@@ -45,8 +48,9 @@ export function ProgramsAdmin() {
   };
 
   const saveEdit = () => {
-    setPrograms(programs.map((p: any) => p.id === editingId ? editForm : p));
-    setEditingId(null);
+    const updated = programs.map((p: any) => p.id === editingId ? editForm : p);
+    setPrograms(updated);
+    handleSave(updated);
   };
 
   const addProgram = () => {
@@ -58,14 +62,18 @@ export function ProgramsAdmin() {
       level: '',
       published: false
     };
-    setPrograms([...programs, newProgram]);
-    startEdit(newProgram);
+    const updated = [...programs, newProgram];
+    setPrograms(updated);
+    setEditingId(newProgram.id);
+    setEditForm(newProgram);
   };
 
-  const deleteProgram = (id: string) => {
-    if (window.confirm('Are you sure you want to delete this program?')) {
-      setPrograms(programs.filter((p: any) => p.id !== id));
-    }
+  const confirmDelete = async () => {
+    if (!deletingProgram) return;
+    const updated = programs.filter((p: any) => p.id !== deletingProgram.id);
+    setPrograms(updated);
+    await handleSave(updated);
+    setDeletingProgram(null);
   };
 
   return (
@@ -76,11 +84,8 @@ export function ProgramsAdmin() {
           <p className="text-gray-600 mt-1">Add, edit, or remove programs offered by the academy.</p>
         </div>
         <div className="flex gap-3">
-          <Button onClick={addProgram} variant="outline" className="gap-2">
+          <Button onClick={addProgram} className="gap-2 bg-green-700 hover:bg-green-800">
             <Plus className="h-4 w-4" /> Add Program
-          </Button>
-          <Button onClick={handleSave} disabled={isSaving} className="bg-green-700 hover:bg-green-800">
-            {isSaving ? 'Saving...' : 'Save All Changes'}
           </Button>
         </div>
       </div>
@@ -135,8 +140,8 @@ export function ProgramsAdmin() {
                   <Button variant="outline" onClick={cancelEdit} className="gap-2">
                     <X className="h-4 w-4" /> Cancel
                   </Button>
-                  <Button onClick={saveEdit} className="gap-2 bg-blue-600 hover:bg-blue-700">
-                    <Check className="h-4 w-4" /> Done Editing
+                  <Button onClick={saveEdit} disabled={isSaving} className="gap-2 bg-blue-600 hover:bg-blue-700">
+                    <Check className="h-4 w-4" /> {isSaving ? 'Saving...' : 'Save Changes'}
                   </Button>
                 </div>
               </div>
@@ -157,7 +162,13 @@ export function ProgramsAdmin() {
                   <Button size="icon" variant="outline" onClick={() => startEdit(program)}>
                     <Edit className="h-4 w-4" />
                   </Button>
-                  <Button size="icon" variant="outline" onClick={() => deleteProgram(program.id)} className="text-red-500 hover:bg-red-50">
+                  <Button 
+                    size="icon" 
+                    variant="outline" 
+                    onClick={() => setDeletingProgram({ id: program.id, name: program.name })} 
+                    className="text-red-500 hover:bg-red-50 hover:text-red-700"
+                    title="Delete Program"
+                  >
                     <Trash className="h-4 w-4" />
                   </Button>
                 </div>
@@ -165,12 +176,23 @@ export function ProgramsAdmin() {
             )}
           </Card>
         ))}
+
         {programs.length === 0 && (
           <div className="p-8 text-center text-gray-500 border-2 border-dashed border-gray-200 rounded-xl">
             No programs found. Click "Add Program" to create one.
           </div>
         )}
       </div>
+
+      <ConfirmModal
+        isOpen={!!deletingProgram}
+        title="Delete Program"
+        message={`Are you sure you want to delete "${deletingProgram?.name || 'this program'}"? This action cannot be undone and will immediately reflect on the website.`}
+        confirmText="Delete Program"
+        isLoading={isSaving}
+        onConfirm={confirmDelete}
+        onClose={() => setDeletingProgram(null)}
+      />
     </div>
   );
 }

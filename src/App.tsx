@@ -1,7 +1,7 @@
 import { useEffect } from "react"
 import { BrowserRouter, Routes, Route } from "react-router-dom"
 import { Toaster } from "react-hot-toast"
-import { useAppStore } from "@/src/store"
+import { useAppStore, useAuthStore } from "@/src/store"
 import { Layout } from "@/src/components/layout/Layout"
 import { AdminLayout } from "@/src/components/admin/AdminLayout"
 import { Home } from "@/src/pages/Home"
@@ -12,8 +12,14 @@ import { Testimonials } from "@/src/pages/Testimonials"
 import { Contact } from "@/src/pages/Contact"
 import { Enrollment } from "@/src/pages/Enrollment"
 import { AdminLogin } from "@/src/pages/admin/Login"
+import { ResetPassword } from "@/src/pages/admin/ResetPassword"
 import { AdminDashboard } from "@/src/pages/admin/Dashboard"
 import { HomeAdmin } from "@/src/pages/admin/HomeAdmin"
+import { AboutAdmin } from "@/src/pages/admin/AboutAdmin"
+import { ContactAdmin } from "@/src/pages/admin/ContactAdmin"
+import { NavigationAdmin } from "@/src/pages/admin/NavigationAdmin"
+import { CountdownAdmin } from "@/src/pages/admin/CountdownAdmin"
+import { PopupsAdmin } from "@/src/pages/admin/PopupsAdmin"
 import { ProgramsAdmin } from "@/src/pages/admin/ProgramsAdmin"
 import { EnrollmentsAdmin } from "@/src/pages/admin/EnrollmentsAdmin"
 import { SiteSettingsAdmin } from "@/src/pages/admin/SiteSettingsAdmin"
@@ -24,14 +30,17 @@ import { SecurityAdmin } from "@/src/pages/admin/SecurityAdmin"
 
 export default function App() {
   const { fetchData, isLoading, data } = useAppStore();
+  const { checkSession, isCheckingSession } = useAuthStore();
 
   useEffect(() => {
     fetchData();
-  }, [fetchData]);
+    checkSession();
+  }, [fetchData, checkSession]);
 
-  if (isLoading && !data) {
+  if ((isLoading && !data) || isCheckingSession) {
     return <div className="min-h-screen flex items-center justify-center bg-gray-50 text-green-900 font-bold">Loading...</div>;
   }
+
 
   return (
     <>
@@ -39,10 +48,16 @@ export default function App() {
       <BrowserRouter>
         <Routes>
           <Route path="/admin/login" element={<AdminLogin />} />
+          <Route path="/admin/reset-password" element={<ResetPassword />} />
           
           <Route path="/admin" element={<AdminLayout />}>
             <Route index element={<AdminDashboard />} />
+            <Route path="navigation" element={<NavigationAdmin />} />
             <Route path="home" element={<HomeAdmin />} />
+            <Route path="about" element={<AboutAdmin />} />
+            <Route path="contact" element={<ContactAdmin />} />
+            <Route path="countdown" element={<CountdownAdmin />} />
+            <Route path="popups" element={<PopupsAdmin />} />
             <Route path="programs" element={<ProgramsAdmin />} />
             <Route path="why-choose-us" element={<WhyChooseUsAdmin />} />
             <Route path="testimonials" element={<TestimonialsAdmin />} />

@@ -5,15 +5,17 @@ import { Input } from '@/src/components/ui/Input';
 import { Textarea } from '@/src/components/ui/Textarea';
 import { Card } from '@/src/components/ui/Card';
 import { Edit, Trash, Plus, Check, X } from 'lucide-react';
+import { ConfirmModal } from '@/src/components/ui/ConfirmModal';
 import toast from 'react-hot-toast';
 
 export function WhyChooseUsAdmin() {
   const { data, updateSection } = useAppStore();
   const { token } = useAuthStore();
-  const [items, setItems] = useState(data?.whyChooseUs || []);
+  const [items, setItems] = useState<any[]>(data?.whyChooseUs || []);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editForm, setEditForm] = useState<any>({});
   const [isSaving, setIsSaving] = useState(false);
+  const [deletingItem, setDeletingItem] = useState<{ id: string; title: string } | null>(null);
 
   useEffect(() => {
     if (data?.whyChooseUs && editingId === null) {
@@ -21,10 +23,10 @@ export function WhyChooseUsAdmin() {
     }
   }, [data?.whyChooseUs, editingId]);
 
-  const handleSave = async () => {
+  const handleSave = async (updatedItems: any[]) => {
     setIsSaving(true);
     try {
-      await updateSection('whyChooseUs', items, token!);
+      await updateSection('whyChooseUs', updatedItems, token!);
       toast.success('Items updated successfully');
       setEditingId(null);
     } catch (error) {
@@ -45,8 +47,9 @@ export function WhyChooseUsAdmin() {
   };
 
   const saveEdit = () => {
-    setItems(items.map((f: any) => f.id === editingId ? editForm : f));
-    setEditingId(null);
+    const updated = items.map((f: any) => f.id === editingId ? editForm : f);
+    setItems(updated);
+    handleSave(updated);
   };
 
   const addItem = () => {
@@ -56,14 +59,18 @@ export function WhyChooseUsAdmin() {
       description: 'New Description',
       icon: 'CheckCircle2'
     };
-    setItems([...items, newItem]);
-    startEdit(newItem);
+    const updated = [...items, newItem];
+    setItems(updated);
+    setEditingId(newItem.id);
+    setEditForm(newItem);
   };
 
-  const deleteItem = (id: string) => {
-    if (window.confirm('Are you sure you want to delete this feature?')) {
-      setItems(items.filter((f: any) => f.id !== id));
-    }
+  const confirmDelete = async () => {
+    if (!deletingItem) return;
+    const updated = items.filter((f: any) => f.id !== deletingItem.id);
+    setItems(updated);
+    await handleSave(updated);
+    setDeletingItem(null);
   };
 
   return (
@@ -74,11 +81,8 @@ export function WhyChooseUsAdmin() {
           <p className="text-gray-600 mt-1">Manage the features displayed in the Why Choose Us section.</p>
         </div>
         <div className="flex gap-3">
-          <Button onClick={addItem} variant="outline" className="gap-2">
+          <Button onClick={addItem} className="gap-2 bg-green-700 hover:bg-green-800">
             <Plus className="h-4 w-4" /> Add Feature
-          </Button>
-          <Button onClick={handleSave} disabled={isSaving} className="bg-green-700 hover:bg-green-800">
-            {isSaving ? 'Saving...' : 'Save All Changes'}
           </Button>
         </div>
       </div>
@@ -118,8 +122,8 @@ export function WhyChooseUsAdmin() {
                   <Button variant="outline" onClick={cancelEdit} className="gap-2">
                     <X className="h-4 w-4" /> Cancel
                   </Button>
-                  <Button onClick={saveEdit} className="gap-2 bg-blue-600 hover:bg-blue-700">
-                    <Check className="h-4 w-4" /> Done Editing
+                  <Button onClick={saveEdit} disabled={isSaving} className="gap-2 bg-blue-600 hover:bg-blue-700">
+                    <Check className="h-4 w-4" /> {isSaving ? 'Saving...' : 'Save Changes'}
                   </Button>
                 </div>
               </div>
@@ -137,7 +141,13 @@ export function WhyChooseUsAdmin() {
                   <Button size="icon" variant="outline" onClick={() => startEdit(item)}>
                     <Edit className="h-4 w-4" />
                   </Button>
-                  <Button size="icon" variant="outline" onClick={() => deleteItem(item.id)} className="text-red-500 hover:bg-red-50">
+                  <Button 
+                    size="icon" 
+                    variant="outline" 
+                    onClick={() => setDeletingItem({ id: item.id, title: item.title })} 
+                    className="text-red-500 hover:bg-red-50 hover:text-red-700"
+                    title="Delete Feature"
+                  >
                     <Trash className="h-4 w-4" />
                   </Button>
                 </div>
@@ -151,6 +161,16 @@ export function WhyChooseUsAdmin() {
           </div>
         )}
       </div>
+
+      <ConfirmModal
+        isOpen={!!deletingItem}
+        title="Delete Feature"
+        message={`Are you sure you want to delete "${deletingItem?.title || 'this feature'}"? This action cannot be undone and will immediately reflect across the site.`}
+        confirmText="Delete Feature"
+        isLoading={isSaving}
+        onConfirm={confirmDelete}
+        onClose={() => setDeletingItem(null)}
+      />
     </div>
   );
 }

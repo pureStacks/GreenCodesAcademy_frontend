@@ -2,20 +2,21 @@ import { useState, useEffect } from 'react';
 import { useAppStore, useAuthStore } from '@/src/store';
 import { Card } from '@/src/components/ui/Card';
 import { Button } from '@/src/components/ui/Button';
-import { Search, Mail, Phone, Calendar } from 'lucide-react';
+import { Search, Mail, Phone, Calendar, Trash2 } from 'lucide-react';
 import { Input } from '@/src/components/ui/Input';
+import { ConfirmModal } from '@/src/components/ui/ConfirmModal';
 import toast from 'react-hot-toast';
 
 export function EnrollmentsAdmin() {
-  const { data, fetchData, updateEnrollmentStatus } = useAppStore();
+  const { data, fetchData, updateEnrollmentStatus, deleteEnrollment } = useAppStore();
   const { token } = useAuthStore();
   const [searchTerm, setSearchTerm] = useState('');
   
-  // We don't need local state for enrollments anymore, store handles it
   const [isUpdating, setIsUpdating] = useState<string | null>(null);
+  const [deletingEnrollment, setDeletingEnrollment] = useState<{ id: string; name: string } | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   useEffect(() => {
-    // We already fetch all data in the pure frontend store, but let's ensure it's loaded
     fetchData(true);
   }, [fetchData]);
 
@@ -33,6 +34,20 @@ export function EnrollmentsAdmin() {
     }
   };
 
+  const confirmDelete = async () => {
+    if (!deletingEnrollment) return;
+    setIsDeleting(true);
+    try {
+      await deleteEnrollment(deletingEnrollment.id, token as string);
+      toast.success('Enrollment application deleted successfully');
+      setDeletingEnrollment(null);
+    } catch {
+      toast.error('Failed to delete enrollment');
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
   const filtered = enrollments.filter((e: any) => 
     e.fullName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
     e.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -44,7 +59,7 @@ export function EnrollmentsAdmin() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h2 className="text-2xl font-bold text-gray-900">Enrollment Submissions</h2>
-          <p className="text-gray-600 mt-1">Manage and track student applications.</p>
+          <p className="text-gray-600 mt-1">Manage and track student applications in real time.</p>
         </div>
         <div className="relative">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
@@ -67,7 +82,7 @@ export function EnrollmentsAdmin() {
                 <th className="p-4">Contact</th>
                 <th className="p-4">Date</th>
                 <th className="p-4">Status</th>
-                <th className="p-4">Actions</th>
+                <th className="p-4 text-right">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
@@ -108,8 +123,8 @@ export function EnrollmentsAdmin() {
                       {enrollment.status.charAt(0).toUpperCase() + enrollment.status.slice(1)}
                     </span>
                   </td>
-                  <td className="p-4">
-                    <div className="flex gap-2">
+                  <td className="p-4 text-right">
+                    <div className="flex items-center justify-end gap-2">
                       <select 
                         className="text-sm border border-gray-200 rounded-lg p-1.5 bg-white outline-none focus:border-green-500 disabled:opacity-50"
                         value={enrollment.status}
@@ -120,6 +135,15 @@ export function EnrollmentsAdmin() {
                         <option value="contacted">Contacted</option>
                         <option value="processed">Processed</option>
                       </select>
+                      <Button
+                        size="icon"
+                        variant="outline"
+                        onClick={() => setDeletingEnrollment({ id: enrollment.id, name: enrollment.fullName })}
+                        className="text-red-500 hover:bg-red-50 hover:text-red-700 h-8 w-8"
+                        title="Delete Enrollment"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
                     </div>
                   </td>
                 </tr>
@@ -135,6 +159,16 @@ export function EnrollmentsAdmin() {
           </table>
         </div>
       </div>
+
+      <ConfirmModal
+        isOpen={!!deletingEnrollment}
+        title="Delete Enrollment"
+        message={`Are you sure you want to delete the enrollment record for "${deletingEnrollment?.name || 'this applicant'}"? This action cannot be undone and will delete it from Supabase.`}
+        confirmText="Delete Record"
+        isLoading={isDeleting}
+        onConfirm={confirmDelete}
+        onClose={() => setDeletingEnrollment(null)}
+      />
     </div>
   );
 }

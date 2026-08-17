@@ -10,6 +10,26 @@ export function About() {
   const { data } = useAppStore();
   const aboutData = data?.about || {};
 
+  const heading = aboutData.heading || "LEARN. BUILD. CREATE. GROW.";
+  const description1 = aboutData.description1 || "We are Nigeria's premier physical technology academy, dedicated to empowering students with practical, career-ready digital skills.";
+  const description2 = aboutData.description2 || "We go beyond theory. Our curriculum is designed around real-world projects, ensuring that our students graduate not just with knowledge, but with the confidence to build, create, and innovate.";
+  const mission = aboutData.mission || "At Green Codes Academy, we believe that practical technology education is the key to unlocking future opportunities. Our mission is to bridge the digital skills gap by providing accessible, high-quality, and hands-on training to individuals of all backgrounds.";
+  
+  const values = [
+    { 
+      title: aboutData.value1Title || "Goal-Oriented", 
+      desc: aboutData.value1Desc || "Focused on career readiness." 
+    },
+    { 
+      title: aboutData.value2Title || "Project-Based", 
+      desc: aboutData.value2Desc || "Learn by building real apps." 
+    },
+    { 
+      title: aboutData.value3Title || "Community", 
+      desc: aboutData.value3Desc || "Collaborative learning space." 
+    }
+  ];
+
   return (
     <>
       <section className="bg-green-950 text-white py-20 lg:py-32">
@@ -20,10 +40,10 @@ export function About() {
             transition={{ duration: 0.5 }}
           >
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6">
-              LEARN. BUILD. CREATE. GROW.
+              {heading}
             </h1>
             <p className="text-lg md:text-xl text-green-100 max-w-3xl mx-auto leading-relaxed">
-              We are Nigeria's premier physical technology academy, dedicated to empowering students with practical, career-ready digital skills.
+              {description1}
             </p>
           </motion.div>
         </div>
@@ -40,22 +60,17 @@ export function About() {
             >
               <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6">Our Mission</h2>
               <p className="text-lg text-gray-600 mb-6 leading-relaxed">
-                At Green Codes Academy, we believe that practical technology education is the key to unlocking future opportunities. Our mission is to bridge the digital skills gap by providing accessible, high-quality, and hands-on training to individuals of all backgrounds.
+                {mission}
               </p>
               <p className="text-lg text-gray-600 mb-10 leading-relaxed">
-                We go beyond theory. Our curriculum is designed around real-world projects, ensuring that our students graduate not just with knowledge, but with the confidence to build, create, and innovate.
+                {description2}
               </p>
 
               <div className="grid sm:grid-cols-2 gap-6 mb-10">
-                {[
-                  { icon: <Target className="h-6 w-6 text-green-600" />, title: "Goal-Oriented", desc: "Focused on career readiness." },
-                  { icon: <BookOpen className="h-6 w-6 text-green-600" />, title: "Project-Based", desc: "Learn by building real apps." },
-                  { icon: <Users2 className="h-6 w-6 text-green-600" />, title: "Community", desc: "Collaborative learning space." },
-                  { icon: <CheckCircle2 className="h-6 w-6 text-green-600" />, title: "Beginner Friendly", desc: "Start from absolute zero." }
-                ].map((item, idx) => (
+                {values.map((item, idx) => (
                   <div key={idx} className="flex gap-4">
                     <div className="bg-green-50 p-3 rounded-xl shrink-0 h-fit">
-                      {item.icon}
+                      <CheckCircle2 className="h-6 w-6 text-green-600" />
                     </div>
                     <div>
                       <h4 className="font-bold text-gray-900">{item.title}</h4>
@@ -65,8 +80,8 @@ export function About() {
                 ))}
               </div>
 
-              <Link to="/enrollment" tabIndex={-1}>
-                <Button size="lg">ENROLL NOW</Button>
+              <Link to={data?.navigation?.cta?.url || "/enrollment"} tabIndex={-1}>
+                <Button size="lg">{data?.navigation?.cta?.text || "ENROLL NOW"}</Button>
               </Link>
             </motion.div>
 
@@ -85,7 +100,7 @@ export function About() {
                   </div>
                 </div>
                 <img 
-                  src={aboutData?.image || "https://i.ibb.co/dsJrwsPC/temp.jpg"}
+                  src={aboutData.image || "https://i.ibb.co/dsJrwsPC/temp.jpg"}
                   alt="Students and instructor in a modern coding bootcamp" 
                   className="w-full h-full object-cover"
                 />
@@ -118,8 +133,8 @@ export function About() {
             ))}
           </div>
 
-          <Link to="/enrollment" tabIndex={-1}>
-             <Button size="lg" className="px-12 text-lg">ENROLL NOW</Button>
+          <Link to={data?.navigation?.cta?.url || "/enrollment"} tabIndex={-1}>
+             <Button size="lg" className="px-12 text-lg">{data?.navigation?.cta?.text || "ENROLL NOW"}</Button>
           </Link>
         </div>
       </section>

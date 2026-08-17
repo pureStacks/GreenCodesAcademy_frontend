@@ -1,30 +1,32 @@
 import * as React from "react"
 import { motion, AnimatePresence } from "motion/react"
 import { CheckCircle2, X } from "lucide-react"
-
-const sampleNotifications = [
-  { name: "Daniel", location: "Lagos", time: "2 minutes ago" },
-  { name: "Aisha", location: "Abuja", time: "5 minutes ago" },
-  { name: "Chuks", location: "Port Harcourt", time: "12 minutes ago" },
-  { name: "Funmi", location: "Ibadan", time: "1 hour ago" },
-  { name: "Osas", location: "Benin City", time: "2 hours ago" },
-]
+import { useAppStore } from "@/src/store"
 
 export function NotificationPopup() {
-  const [currentNotification, setCurrentNotification] = React.useState<typeof sampleNotifications[0] | null>(null)
-  const [isVisible, setIsVisible] = React.useState(false)
+  const { data } = useAppStore();
+  const config = data?.notifications || { enabled: true };
+  const enrollments = data?.enrollments || [];
+  
+  // Filter for approved enrollments
+  const approvedEnrollments = enrollments.filter((e: any) => e.status === 'approved');
+
+  const [currentNotification, setCurrentNotification] = React.useState<any | null>(null);
+  const [isVisible, setIsVisible] = React.useState(false);
 
   React.useEffect(() => {
-    // Start the notification loop
+    if (!config.enabled || approvedEnrollments.length === 0) return;
+
     const triggerNotification = () => {
-      const randomUser = sampleNotifications[Math.floor(Math.random() * sampleNotifications.length)]
-      setCurrentNotification(randomUser)
-      setIsVisible(true)
+      // Pick a random recent approved enrollment
+      const randomUser = approvedEnrollments[Math.floor(Math.random() * approvedEnrollments.length)];
+      setCurrentNotification(randomUser);
+      setIsVisible(true);
 
       // Hide after 5 seconds
       setTimeout(() => {
-        setIsVisible(false)
-      }, 5000)
+        setIsVisible(false);
+      }, 5000);
     }
 
     // Initial delay before first notification
@@ -40,7 +42,7 @@ export function NotificationPopup() {
     }, 10000)
 
     return () => clearTimeout(initialTimer)
-  }, [])
+  }, [config.enabled, approvedEnrollments.length])
 
   return (
     <div className="fixed bottom-6 left-6 z-40 pointer-events-none">
@@ -65,9 +67,9 @@ export function NotificationPopup() {
             <div>
               <p className="text-xs font-bold text-green-700 uppercase tracking-wider mb-1">New Enrollment</p>
               <p className="text-sm text-gray-800 leading-tight">
-                <span className="font-semibold">{currentNotification.name}</span> from <span className="font-semibold">{currentNotification.location}</span> just enrolled.
+                <span className="font-semibold">{currentNotification.firstName} {currentNotification.lastName}</span> from <span className="font-semibold">{currentNotification.city}</span> just enrolled.
               </p>
-              <p className="text-xs text-gray-500 mt-1">{currentNotification.time}</p>
+              <p className="text-xs text-gray-500 mt-1">Recently joined</p>
             </div>
           </motion.div>
         )}

@@ -2,19 +2,22 @@ import { Link } from "react-router-dom"
 import { Code2, Facebook, Twitter, Instagram, Linkedin, Mail, Phone, MapPin } from "lucide-react"
 import { useAppStore } from "@/src/store"
 
-const navItems = [
-  { name: "Home", path: "/" },
-  { name: "About", path: "/about" },
-  { name: "Programs", path: "/programs" },
-  { name: "Why Choose Us", path: "/why-choose-us" },
-  { name: "Testimonials", path: "/testimonials" },
-  { name: "Contact", path: "/contact" },
-  { name: "Enroll Now", path: "/enrollment" },
-]
-
 export function Footer() {
   const { data } = useAppStore();
   const siteData = data?.site || {};
+  const navigation = data?.navigation || {
+    links: [
+      { name: "Home", path: "/" },
+      { name: "About", path: "/about" },
+      { name: "Programs", path: "/programs" },
+      { name: "Why Choose Us", path: "/why-choose-us" },
+      { name: "Testimonials", path: "/testimonials" },
+      { name: "Contact", path: "/contact" },
+    ],
+    cta: { text: "ENROLL NOW", url: "/enrollment" }
+  };
+  
+  const navItems = navigation.links || [];
 
   const siteName = siteData.name || "Green Codes Academy";
   const footerDesc = siteData.footerDescription || "Empowering the next generation with practical technology and digital skills.";

@@ -3,6 +3,7 @@ import { motion } from "motion/react"
 import { Star } from "lucide-react"
 import { Card } from "@/src/components/ui/Card"
 import { CTA } from "@/src/components/sections/CTA"
+import { ReviewForm } from "@/src/components/sections/ReviewForm"
 import { useAppStore } from "@/src/store"
 
 export function Testimonials() {
@@ -46,6 +47,14 @@ export function Testimonials() {
                     ))}
                   </div>
                   <p className="text-gray-700 italic mb-8 flex-1 leading-relaxed">"{testimonial.text}"</p>
+                  
+                  {testimonial.adminReply && (
+                    <div className="bg-gray-50 p-4 rounded-lg border border-gray-100 mb-6">
+                      <p className="text-xs font-bold text-gray-900 mb-1">Response from Green Codes Academy:</p>
+                      <p className="text-sm text-gray-600">"{testimonial.adminReply}"</p>
+                    </div>
+                  )}
+
                   <div className="flex items-center gap-4 border-t border-gray-100 pt-6 mt-auto">
                     <div className="h-12 w-12 rounded-full bg-green-100 flex items-center justify-center font-bold text-green-800 text-lg shrink-0">
                       {testimonial.name.charAt(0)}
@@ -66,9 +75,11 @@ export function Testimonials() {
             </div>
           )}
 
-          <div className="text-center mt-12">
+          <div className="text-center mt-12 mb-8">
             <h3 className="text-2xl font-bold text-gray-900 mb-2">YOUR SUCCESS STORY COULD BE NEXT.</h3>
           </div>
+          
+          <ReviewForm />
         </div>
       </section>
 

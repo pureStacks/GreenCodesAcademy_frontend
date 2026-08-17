@@ -19,7 +19,12 @@ export function Enrollment() {
   const onSubmit = async (formData: any) => {
     setIsSubmitting(true);
     try {
-      await addEnrollment(formData);
+      const enrollmentData = {
+        ...formData,
+        fullName: `${formData.firstName} ${formData.lastName}`,
+        message: formData.motivation
+      };
+      await addEnrollment(enrollmentData);
       setIsSuccess(true);
       toast.success('Enrollment submitted successfully!');
       reset();

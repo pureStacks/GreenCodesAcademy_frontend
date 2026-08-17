@@ -9,7 +9,9 @@ interface AppState {
   fetchData: (force?: boolean) => Promise<void>;
   updateSection: (section: string, payload: any, token: string) => Promise<void>;
   updateEnrollmentStatus: (id: string, status: string, token: string) => Promise<void>;
+  deleteEnrollment: (id: string, token: string) => Promise<void>;
   addEnrollment: (enrollment: any) => Promise<void>;
+  addTestimonial: (testimonial: any) => Promise<void>;
 }
 
 export const useAppStore = create<AppState>((set, get) => ({
@@ -118,6 +120,31 @@ export const useAppStore = create<AppState>((set, get) => ({
     }
   },
   
+  deleteEnrollment: async (id, token) => {
+    try {
+      const state = get();
+      if (!state.data) throw new Error('No data loaded');
+      
+      const enrollments = (state.data.enrollments || []).filter((e: any) => e.id !== id);
+      
+      const { error } = await supabase.from('app_data').upsert({
+        section_key: 'enrollments',
+        section_data: enrollments
+      }, { onConflict: 'section_key' });
+      
+      if (error) throw error;
+      
+      set((state) => ({
+        data: {
+          ...state.data,
+          enrollments
+        }
+      }));
+    } catch (error: any) {
+      throw error;
+    }
+  },
+  
   addEnrollment: async (enrollment) => {
     try {
       const state = get();
@@ -151,6 +178,41 @@ export const useAppStore = create<AppState>((set, get) => ({
     } catch (error: any) {
       throw error;
     }
+  },
+
+  addTestimonial: async (testimonial) => {
+    try {
+      const state = get();
+      if (!state.data) await get().fetchData(true);
+      
+      const testimonials = [...(get().data?.testimonials || [])];
+      
+      const newTestimonial = {
+        id: Date.now().toString(),
+        ...testimonial,
+        status: 'pending',
+        published: false,
+        createdAt: new Date().toISOString()
+      };
+      
+      testimonials.push(newTestimonial);
+      
+      const { error } = await supabase.from('app_data').upsert({
+        section_key: 'testimonials',
+        section_data: testimonials
+      }, { onConflict: 'section_key' });
+
+      if (error) throw error;
+      
+      set((state) => ({
+        data: {
+          ...state.data,
+          testimonials
+        }
+      }));
+    } catch (error: any) {
+      throw error;
+    }
   }
 }));
 
@@ -158,19 +220,48 @@ export const useAppStore = create<AppState>((set, get) => ({
 interface AuthState {
   token: string | null;
   isAuthenticated: boolean;
+  isCheckingSession: boolean;
   login: (token: string) => void;
   logout: () => void;
+  checkSession: () => Promise<void>;
 }
 
 export const useAuthStore = create<AuthState>((set) => ({
-  token: localStorage.getItem('adminToken'),
-  isAuthenticated: !!localStorage.getItem('adminToken'),
+  token: null,
+  isAuthenticated: false,
+  isCheckingSession: true,
+  
   login: (token: string) => {
-    localStorage.setItem('adminToken', token);
     set({ token, isAuthenticated: true });
   },
-  logout: () => {
-    localStorage.removeItem('adminToken');
+  
+  logout: async () => {
+    await supabase.auth.signOut();
     set({ token: null, isAuthenticated: false });
+  },
+  
+  checkSession: async () => {
+    const { data: { session } } = await supabase.auth.getSession();
+    const ADMIN_EMAIL = 'kehindehusseinpopoola@gmail.com';
+    
+    if (session && session.user?.email === ADMIN_EMAIL) {
+      set({ token: session.access_token, isAuthenticated: true, isCheckingSession: false });
+    } else {
+      if (session && session.user?.email !== ADMIN_EMAIL) {
+        await supabase.auth.signOut();
+      }
+      set({ token: null, isAuthenticated: false, isCheckingSession: false });
+    }
+    
+    supabase.auth.onAuthStateChange(async (_event, session) => {
+      if (session && session.user?.email === ADMIN_EMAIL) {
+        set({ token: session.access_token, isAuthenticated: true });
+      } else {
+        if (session && session.user?.email !== ADMIN_EMAIL) {
+           await supabase.auth.signOut();
+        }
+        set({ token: null, isAuthenticated: false });
+      }
+    });
   }
 }));
