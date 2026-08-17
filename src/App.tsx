@@ -29,7 +29,7 @@ import { WhyChooseUsAdmin } from "@/src/pages/admin/WhyChooseUsAdmin"
 import { SecurityAdmin } from "@/src/pages/admin/SecurityAdmin"
 
 export default function App() {
-  const { fetchData, isLoading, data } = useAppStore();
+  const { fetchData } = useAppStore();
   const { checkSession, isCheckingSession } = useAuthStore();
 
   useEffect(() => {
@@ -37,10 +37,16 @@ export default function App() {
     checkSession();
   }, [fetchData, checkSession]);
 
-  if ((isLoading && !data) || isCheckingSession) {
-    return <div className="min-h-screen flex items-center justify-center bg-gray-50 text-green-900 font-bold">Loading...</div>;
+  if (isCheckingSession) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="flex flex-col items-center gap-3">
+          <div className="w-8 h-8 border-3 border-green-700 border-t-transparent rounded-full animate-spin"></div>
+          <span className="text-sm font-medium text-gray-500">Loading Green Codes Academy...</span>
+        </div>
+      </div>
+    );
   }
-
 
   return (
     <>
@@ -65,7 +71,6 @@ export default function App() {
             <Route path="enrollments" element={<EnrollmentsAdmin />} />
             <Route path="settings" element={<SiteSettingsAdmin />} />
             <Route path="security" element={<SecurityAdmin />} />
-            {/* We will add more admin routes here */}
           </Route>
 
           <Route path="/" element={<Layout />}>

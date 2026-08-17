@@ -4,6 +4,7 @@ import { Header } from "./Header"
 import { Footer } from "./Footer"
 import { WhatsAppPopup } from "./WhatsAppPopup"
 import { NotificationPopup } from "./NotificationPopup"
+import { PromoModal } from "./PromoModal"
 
 export function Layout() {
   const location = useLocation()
@@ -21,6 +22,8 @@ export function Layout() {
       <Footer />
       <WhatsAppPopup />
       <NotificationPopup />
+      <PromoModal />
     </div>
   )
 }
+

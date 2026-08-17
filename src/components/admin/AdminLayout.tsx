@@ -8,15 +8,15 @@ import {
   CheckCircle, 
   MessageSquare, 
   MapPin, 
-  Users,
-  Settings,
-  Image,
-  LogOut,
-  Menu,
-  X,
-  CreditCard,
-  FileText,
-  Shield
+  Settings, 
+  LogOut, 
+  Menu, 
+  X, 
+  CreditCard, 
+  FileText, 
+  Shield,
+  Loader2,
+  Lock
 } from 'lucide-react';
 import { useState } from 'react';
 import { Button } from '@/src/components/ui/Button';
@@ -39,16 +39,29 @@ const adminNavItems = [
 ];
 
 export function AdminLayout() {
-  const { isAuthenticated, logout } = useAuthStore();
+  const { isAuthenticated, token, adminEmail, isCheckingSession, logout } = useAuthStore();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const location = useLocation();
 
-  if (!isAuthenticated) {
-    return <Navigate to="/admin/login" replace />;
+  if (isCheckingSession) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center p-4">
+        <div className="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 flex flex-col items-center text-center max-w-sm w-full">
+          <Loader2 className="h-10 w-10 text-green-700 animate-spin mb-4" />
+          <h3 className="text-lg font-bold text-gray-900 mb-1">Verifying Admin Access</h3>
+          <p className="text-sm text-gray-500">Checking credentials and security session...</p>
+        </div>
+      </div>
+    );
   }
 
-  const handleLogout = () => {
-    logout();
+  // Strict route guard: Unauthenticated visitors cannot view admin content
+  if (!isAuthenticated || !token) {
+    return <Navigate to="/admin/login" state={{ from: location }} replace />;
+  }
+
+  const handleLogout = async () => {
+    await logout();
   };
 
   return (
@@ -67,14 +80,19 @@ export function AdminLayout() {
         ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}
       `}>
         <div className="h-16 flex items-center justify-between px-4 border-b border-green-800">
-          <span className="text-xl font-bold text-yellow-400">Green Codes CMS</span>
+          <div className="flex items-center gap-2">
+            <div className="p-1 bg-green-800 rounded-lg text-yellow-400">
+              <Lock className="h-4 w-4" />
+            </div>
+            <span className="text-lg font-bold text-yellow-400 tracking-tight">Green Codes CMS</span>
+          </div>
           <button onClick={() => setSidebarOpen(false)} className="lg:hidden text-gray-300 hover:text-white">
             <X className="h-6 w-6" />
           </button>
         </div>
 
         <nav className="p-4 space-y-1 h-[calc(100vh-4rem)] overflow-y-auto">
-          <div className="text-xs font-semibold text-green-400 uppercase tracking-wider mb-2 mt-4">Content Management</div>
+          <div className="text-xs font-semibold text-green-400 uppercase tracking-wider mb-2 mt-2">Content Management</div>
           {adminNavItems.map((item) => {
             const Icon = item.icon;
             const isActive = location.pathname === item.path;
@@ -84,24 +102,29 @@ export function AdminLayout() {
                 key={item.path}
                 to={item.path}
                 className={`
-                  flex items-center gap-3 px-3 py-2 rounded-lg transition-colors
-                  ${isActive ? 'bg-green-800 text-white' : 'text-green-100 hover:bg-green-900'}
+                  flex items-center gap-3 px-3 py-2 rounded-lg transition-colors text-sm
+                  ${isActive ? 'bg-green-800 text-white font-semibold' : 'text-green-100 hover:bg-green-900/70'}
                 `}
                 onClick={() => setSidebarOpen(false)}
               >
-                <Icon className="h-5 w-5" />
-                <span className="font-medium">{item.label}</span>
+                <Icon className="h-4 w-4 shrink-0" />
+                <span className="truncate">{item.label}</span>
               </Link>
             )
           })}
           
-          <div className="pt-8 mt-8 border-t border-green-800">
+          <div className="pt-6 mt-6 border-t border-green-900/60">
+            <div className="px-3 py-2 mb-2 bg-green-900/40 rounded-lg">
+              <span className="text-[11px] text-green-300 block font-mono truncate">
+                {adminEmail || 'Verified Admin'}
+              </span>
+            </div>
             <button
               onClick={handleLogout}
-              className="flex items-center gap-3 px-3 py-2 rounded-lg text-red-400 hover:bg-green-900 w-full transition-colors"
+              className="flex items-center gap-3 px-3 py-2 rounded-lg text-red-400 hover:bg-red-950/40 hover:text-red-300 w-full transition-colors text-sm font-medium"
             >
-              <LogOut className="h-5 w-5" />
-              <span className="font-medium">Logout</span>
+              <LogOut className="h-4 w-4" />
+              <span>Log Out</span>
             </button>
           </div>
         </nav>
@@ -114,20 +137,26 @@ export function AdminLayout() {
           <div className="flex items-center gap-4">
             <button 
               onClick={() => setSidebarOpen(true)}
-              className="lg:hidden text-gray-600 hover:text-gray-900"
+              className="lg:hidden text-gray-600 hover:text-gray-900 p-1 rounded-md hover:bg-gray-100"
             >
               <Menu className="h-6 w-6" />
             </button>
-            <h1 className="text-xl font-bold text-gray-900 truncate">Admin Dashboard</h1>
+            <h1 className="text-lg md:text-xl font-bold text-gray-900 truncate">Admin Dashboard</h1>
           </div>
           
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3">
             <Link to="/" target="_blank">
-              <Button variant="outline" size="sm">View Site</Button>
+              <Button variant="outline" size="sm">View Live Site</Button>
             </Link>
-            <div className="h-8 w-8 rounded-full bg-green-100 flex items-center justify-center text-green-700 font-bold">
-              A
-            </div>
+            <Button 
+              variant="outline" 
+              size="sm"
+              onClick={handleLogout}
+              className="text-red-600 hover:text-red-700 hover:bg-red-50 border-red-200"
+            >
+              <LogOut className="h-4 w-4 mr-1.5" />
+              Sign Out
+            </Button>
           </div>
         </header>
 
